@@ -1,5 +1,7 @@
 # base tests...
 
+find_package(doctest REQUIRED)
+
 set(libs base udebug)
 
 if (WIN32)
@@ -40,7 +42,7 @@ if (TESTING)
   add_test(NAME base_item_allocator_10     COMMAND test_item_allocator     10)
   add_test(NAME base_item_allocator_100000 COMMAND test_item_allocator 100000)
 
-  add_test(NAME base_rangeset COMMAND test_rangeset)
+  #add_test(NAME base_rangeset COMMAND test_rangeset)
   add_test(NAME base_random_seed COMMAND test_random_seed)
   
   #This tests is disabled as it will fail random on macos or cross compile, sometime also on slower targets 
