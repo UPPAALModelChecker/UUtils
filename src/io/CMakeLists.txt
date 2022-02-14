@@ -1,0 +1,6 @@
+file(GLOB io_source "*.c" "*.cpp" "*.h")
+
+add_library(io INTERFACE)
+
+install(TARGETS io EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT io)
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../include/io DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT io)
