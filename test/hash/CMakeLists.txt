@@ -1,6 +1,7 @@
 # hash tests...
+find_package(doctest REQUIRED)
 
-set(libs hash base udebug)
+set(libs hash base udebug doctest::doctest)
 
 if (BENCHMARK) 
   find_package(benchmark REQUIRED)

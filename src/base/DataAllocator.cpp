@@ -299,4 +299,4 @@ void base_delete(void* mem, size_t unused1, void* unused2) { delete[](int32_t*) 
 
 /* Instance of allocator_t based on new
  */
-allocator_t base_newallocator = {allocData : nullptr, allocFunction : base_new, deallocFunction : base_delete};
+allocator_t base_newallocator = {.allocData = nullptr, .allocFunction = base_new, .deallocFunction = base_delete};

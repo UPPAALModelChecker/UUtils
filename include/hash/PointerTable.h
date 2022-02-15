@@ -11,6 +11,7 @@
 #define INCLUDE_HASH_POINTERTABLE_H
 
 #include <cinttypes>
+#include <cstddef>
 
 namespace uhash
 {

@@ -2,7 +2,7 @@
 
 find_package(doctest REQUIRED)
 
-set(libs base udebug)
+set(libs base udebug doctest::doctest)
 
 if (WIN32)
   list(APPEND libs psapi iphlpapi)
