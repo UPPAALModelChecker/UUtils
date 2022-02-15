@@ -1,9 +1,6 @@
 file(GLOB hash_source "*.c" "*.cpp" "*.h")
-
-find_library(xxhash REQUIRED NAMES xxhash xxHash)
-
 add_library(hash ${hash_source})
-target_link_libraries(hash xxhash)
+
 
 target_include_directories(hash
                            INTERFACE
