@@ -1,6 +1,7 @@
 # debug tests...
+find_package(doctest REQUIRED)
 
-set(libs base udebug)
+set(libs base udebug doctest::doctest)
 
 if (TESTING)
   file(GLOB test_sources "test_*.c" "test_*.cpp")

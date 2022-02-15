@@ -23,14 +23,14 @@ namespace base
 
     Timer::AutoStartStop::~AutoStartStop() { timer.pause(); }
 
-    Timer::Timer(bool running): paused(!running) { timer = std::chrono::high_resolution_clock::now(); }
+    Timer::Timer(bool running): paused(!running) { timer = std::chrono::system_clock::now(); }
 
     void Timer::pause()
     {
         assert(!paused);
         if (!paused) {
             paused = true;
-            auto end = std::chrono::high_resolution_clock::now();
+            auto end = std::chrono::system_clock::now();
             nanoseconds += end - timer;
         }
     }
@@ -39,14 +39,14 @@ namespace base
     {
         assert(paused);
         paused = false;
-        timer = std::chrono::high_resolution_clock::now();
+        timer = std::chrono::system_clock::now();
     }
 
     double Timer::getElapsed()
     {
         auto time = nanoseconds;
         if (!paused) {
-            auto end = std::chrono::high_resolution_clock::now();
+            auto end = std::chrono::system_clock::now();
             time += end - timer;
         }
         return std::chrono::duration_cast<std::chrono::milliseconds>(time).count() / 1000.0;

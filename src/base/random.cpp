@@ -22,7 +22,7 @@ static uint32_t sharedseed = 42;
 
 RandomGenerator::RandomGenerator(): s{new internalstate()} { seed(sharedseed++); }
 
-RandomGenerator::~RandomGenerator() {}
+RandomGenerator::~RandomGenerator() noexcept {}
 
 void RandomGenerator::set_seed(const uint32_t seed) { sharedseed = seed; }
 

@@ -52,7 +52,7 @@ namespace base
     private:
         std::chrono::nanoseconds nanoseconds{0};
         bool paused = false;
-        std::chrono::system_clock::time_point timer;
+        std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> timer;
     };
 }  // namespace base
 
