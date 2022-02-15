@@ -7,15 +7,50 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
+  format:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Format
       run: find src include test -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - name: Get dependencies
       run: sudo apt-get update && sudo apt-get install libboost-all-dev doctest-dev
     - name: Build and test
-      run: mkdir build && cd build && cmake -DTESTING=yes .. && make && ctest
+      run: |
+          mkdir build
+          cd build
+          cmake -DTESTING=yes ..
+          cmake --build .
+          ctest
+  build-win:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get dependencies
+      run: |
+          vcpkg integrate install
+          vcpkg install doctest --triplet x64-windows
+    - name: Build and test
+      run: |
+          mkdir build
+          cd build
+          cmake "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
+          cmake --build .
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get dependencies
+      run: brew install boost doctest
+    - name: Build and test
+      run: |
+          mkdir build
+          cd build
+          cmake -DTESTING=yes ..
+          cmake --build .
+          ctest
+
