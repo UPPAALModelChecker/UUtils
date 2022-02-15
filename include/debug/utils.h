@@ -19,6 +19,7 @@
 #define INCLUDE_DEBUG_UTILS_H
 
 #include "base/inttypes.h"
+
 #include <stdio.h>  // FILE
 
 #ifdef __cplusplus
@@ -58,8 +59,7 @@ std::ostream& debug_cppPrintBitMatrix(std::ostream& out, const uint32_t* s, cind
  * @param out: output stream where to print (cerr,cout)
  * print. int[n] will be printed as bits.
  */
-std::ostream& debug_cppPrintDiffBitstrings(std::ostream& out, const uint32_t* s1,
-                                           const uint32_t* s2, size_t n);
+std::ostream& debug_cppPrintDiffBitstrings(std::ostream& out, const uint32_t* s1, const uint32_t* s2, size_t n);
 
 /** Print bits, lower bits first.
  * @param i: the int to print.
@@ -96,8 +96,7 @@ std::ostream& debug_cppPrintRealVector(std::ostream& out, const double* data, si
  * @param out: where t print.
  * @pre vec1 and vec2 are int32_t[size]
  */
-std::ostream& debug_cppPrintDiffVectors(std::ostream& out, const int32_t* vec1, const int32_t* vec2,
-                                        size_t size);
+std::ostream& debug_cppPrintDiffVectors(std::ostream& out, const int32_t* vec1, const int32_t* vec2, size_t size);
 
 /** Print memory quantity in human
  * readable format with B,MB,GB units.
@@ -226,10 +225,7 @@ void debug_printActiveSet(FILE* out, const uint32_t* bits, size_t intSize);
  */
 const char* debug_shortName(const char* filename, const char* test);
 
-static inline const char* debug_shortSource(const char* filename)
-{
-    return debug_shortName(filename, "tests/");
-}
+static inline const char* debug_shortSource(const char* filename) { return debug_shortName(filename, "tests/"); }
 
 /** Generate random bits. To the diffence of
  * randomize, this function allows specifying

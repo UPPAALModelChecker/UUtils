@@ -13,10 +13,11 @@
 #include "base/Timer.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
 #include <iostream>
 #include <random>
 #include <thread>
+
+#include <doctest/doctest.h>
 
 using namespace std;
 using namespace base;

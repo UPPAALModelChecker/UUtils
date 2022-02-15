@@ -67,11 +67,10 @@ void debug_pop();
 
 /* Macros to simplify calls */
 
-#define debug_remember(TYPE, PTR) \
-    ((TYPE)debug_rememberPointer(PTR, __FILE__, __LINE__, __FUNCTION__))
-#define debug_forget(PTR) debug_forgetPointer(PTR, __FILE__, __LINE__, __FUNCTION__)
-#define debug_mark()      debug_prepareDelete(__FILE__, __LINE__, __FUNCTION__)
-#define debug_push()      debug_pushPosition(__FILE__, __LINE__, __FUNCTION__)
+#define debug_remember(TYPE, PTR) ((TYPE)debug_rememberPointer(PTR, __FILE__, __LINE__, __FUNCTION__))
+#define debug_forget(PTR)         debug_forgetPointer(PTR, __FILE__, __LINE__, __FUNCTION__)
+#define debug_mark()              debug_prepareDelete(__FILE__, __LINE__, __FUNCTION__)
+#define debug_push()              debug_pushPosition(__FILE__, __LINE__, __FUNCTION__)
 
 #ifdef __cplusplus
 }

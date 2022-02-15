@@ -1,8 +1,9 @@
 #include "base/rangeset.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
 #include <vector>
+
+#include <doctest/doctest.h>
 
 using namespace base;
 using UTAP::range_t;

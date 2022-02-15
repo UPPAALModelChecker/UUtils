@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.16)
+project(UUtils VERSION 1.1.0 LANGUAGES CXX C)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
@@ -10,7 +11,6 @@ endif(TESTING)
 set(CMAKE_CXX_STANDARD 17)
 cmake_policy(SET CMP0048 NEW) # project() command manages VERSION variables
 
-project(UUtils VERSION 1.1.0 LANGUAGES CXX C)
 
 set(MODULES base debug hash io)
 include_directories("include")

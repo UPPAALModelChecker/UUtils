@@ -16,16 +16,17 @@
 
 #if !defined(_WIN32) && defined(ENABLE_MONITOR)
 
+#include "debug/new.h"
+
+#include "base/intutils.h"
+#include "base/linkable.h"
+#include "debug/macros.h"
+#include "debug/malloc.h"
+
 #include <assert.h>
+#include <iostream>
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
-
-#include "base/linkable.h"
-#include "base/intutils.h"
-#include "debug/macros.h"
-#include "debug/new.h"
-#include "debug/malloc.h"
 
 // no mess please
 #ifdef new
@@ -88,8 +89,7 @@ namespace debug
         static bool areEqual(const PositionInfo_t* p1, const PositionInfo_t* p2)
         {
             if (p1 && p2) {
-                return p1->filename == p2->filename && p1->line == p2->line &&
-                       p1->function == p2->function;
+                return p1->filename == p2->filename && p1->line == p2->line && p1->function == p2->function;
             } else {
                 return p1 == p2;
             }
@@ -325,8 +325,8 @@ namespace debug
                     os << (leaki->nb > 1 ? " pointers" : " pointer");
                 }
                 if (leaki->where) {
-                    os << " from " << debug_shortSource(leaki->where->filename) << ':'
-                       << leaki->where->function << '(' << leaki->where->line << ')';
+                    os << " from " << debug_shortSource(leaki->where->filename) << ':' << leaki->where->function << '('
+                       << leaki->where->line << ')';
                 }
 
                 os << NORMAL "\n";
@@ -339,8 +339,7 @@ namespace debug
      * by new: reset the hash table and the statistics.
      */
     NewPointerTable::NewPointerTable():
-        peakAlloc(0), minAlloc(0xffffffff), maxAlloc(0), totalAlloc(0), nbBuckets(0),
-        mask(INIT_SIZE - 1)
+        peakAlloc(0), minAlloc(0xffffffff), maxAlloc(0), totalAlloc(0), nbBuckets(0), mask(INIT_SIZE - 1)
     {
         table = (MemBucket_t**)malloc(INIT_SIZE * sizeof(MemBucket_t*));
         if (!table) {
@@ -383,8 +382,7 @@ namespace debug
 
         if (leak) {
             if (totalAlloc != 0) {
-                std::cerr << RED(BOLD) "Memory leak of " << totalAlloc
-                          << " bytes!\nDetails:" NORMAL "\n";
+                std::cerr << RED(BOLD) "Memory leak of " << totalAlloc << " bytes!\nDetails:" NORMAL "\n";
             }
         } else {
             std::cerr << CYAN(THIN) "Allocated memory: " << totalAlloc << " bytes" NORMAL "\n";
@@ -498,15 +496,10 @@ namespace debug
             while (bucket) {
                 if (bucket->ptr == ptr) {
                     if (BUCKETSIZE(bucket) != NOSIZE) {
-                        fprintf(stderr,
-                                MAGENTA(BOLD) "Error: pointer %p already registered!" NORMAL "\n",
-                                ptr);
+                        fprintf(stderr, MAGENTA(BOLD) "Error: pointer %p already registered!" NORMAL "\n", ptr);
                         return;
                     } else if (!warning) {
-                        fprintf(stderr,
-                                MAGENTA(BOLD) "Warning: user pointer %p already registered!" NORMAL
-                                              "\n",
-                                ptr);
+                        fprintf(stderr, MAGENTA(BOLD) "Warning: user pointer %p already registered!" NORMAL "\n", ptr);
                         warning = true;
                     }
                 }
@@ -549,8 +542,7 @@ namespace debug
     /* Add a new extended bucket to the hash table.
      * Similar to previous 'remember'.
      */
-    void NewPointerTable::remember(void* ptr, size_t size, const char* filename, int line,
-                                   const char* function)
+    void NewPointerTable::remember(void* ptr, size_t size, const char* filename, int line, const char* function)
     {
         if (table) {
             MemBucket_t** entry = &table[hashPtr(ptr) & mask];
@@ -562,10 +554,8 @@ namespace debug
                     if (size == NOSIZE) {
                         if (BUCKETSIZE(bucket) == NOSIZE) {
                             if (!warning1) {
-                                fprintf(
-                                    stderr,
-                                    MAGENTA(BOLD) "Warning: registering again user pointer %p! [%s",
-                                    ptr, filename ? debug_shortSource(filename) : "");
+                                fprintf(stderr, MAGENTA(BOLD) "Warning: registering again user pointer %p! [%s", ptr,
+                                        filename ? debug_shortSource(filename) : "");
                                 if (function) {
                                     fprintf(stderr, ":%s", function);
                                 }
@@ -590,8 +580,7 @@ namespace debug
                                 warning2 = true;
                             }
                         } else {
-                            fprintf(stderr,
-                                    MAGENTA(BOLD) "Error: pointer %p already registered! [%s", ptr,
+                            fprintf(stderr, MAGENTA(BOLD) "Error: pointer %p already registered! [%s", ptr,
                                     filename ? debug_shortSource(filename) : "");
                             if (function) {
                                 fprintf(stderr, ":%s", function);
@@ -654,14 +643,13 @@ namespace debug
             while (bucket) {
                 assert(BUCKETSIZE(bucket) != NOSIZE || (bucket->size & EXTENSION_BIT));
 
-                if (bucket->ptr == ptr && ((nosize && BUCKETSIZE(bucket) == NOSIZE) ||
-                                           (!nosize && BUCKETSIZE(bucket) != NOSIZE))) {
+                if (bucket->ptr == ptr &&
+                    ((nosize && BUCKETSIZE(bucket) == NOSIZE) || (!nosize && BUCKETSIZE(bucket) != NOSIZE))) {
                     if (!nosize) {
                         totalAlloc -= BUCKETSIZE(bucket);
                     }
                     bucket->unlink(toBucket);
-                    overhead -= (bucket->size & EXTENSION_BIT) ? sizeof(ExtMemBucket_t)
-                                                               : sizeof(MemBucket_t);
+                    overhead -= (bucket->size & EXTENSION_BIT) ? sizeof(ExtMemBucket_t) : sizeof(MemBucket_t);
                     free(bucket);
                     dec();  // one fewer bucket
                     return;
@@ -678,12 +666,10 @@ namespace debug
                 if (pos.function) {
                     fprintf(stderr, ":%s", pos.function);
                 }
-                fprintf(stderr, "(%d):\n%s %p%s" NORMAL "\n", pos.line,
-                        nosize ? "Unknown pointer" : "Pointer", ptr,
+                fprintf(stderr, "(%d):\n%s %p%s" NORMAL "\n", pos.line, nosize ? "Unknown pointer" : "Pointer", ptr,
                         nosize ? "!" : " not registered! Segmentation fault soon!");
             } else {
-                fprintf(stderr, RED(BOLD) "%s %p%s" NORMAL "\n",
-                        nosize ? "Unknown pointer" : "Pointer", ptr,
+                fprintf(stderr, RED(BOLD) "%s %p%s" NORMAL "\n", nosize ? "Unknown pointer" : "Pointer", ptr,
                         nosize ? "!" : " not registered! Segmentation fault soon!");
             }
 
@@ -838,10 +824,7 @@ void debug_pushPosition(const char* filename, int line, const char* function)
     localPosition.function = function;
 }
 
-void debug_pop()
-{
-    debug_prepareDelete(localPosition.filename, localPosition.line, localPosition.function);
-}
+void debug_pop() { debug_prepareDelete(localPosition.filename, localPosition.line, localPosition.function); }
 
 void* debug_monitoredMalloc(size_t size, const char* filename, int line, const char* function)
 {
@@ -862,9 +845,7 @@ void debug_monitoredFree(void* ptr, const char* filename, int line, const char* 
     if (ptr) {
         free(ptr);
     } else {
-        std::cerr << RED(
-            BOLD) "Error: free(NULL) was called: expect a segfault without -DENABLE_MONITOR!" NORMAL
-                  "\n";
+        std::cerr << RED(BOLD) "Error: free(NULL) was called: expect a segfault without -DENABLE_MONITOR!" NORMAL "\n";
     }
     // fprintf(stderr, "Unregister 0x%x\n", (uintptr_t)ptr);
 }
