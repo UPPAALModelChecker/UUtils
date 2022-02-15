@@ -12,11 +12,12 @@
  *********************************************************************/
 
 #include "debug/c_allocator.h"
+
 #include "debug/macros.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 /** Easy hash of a pointer:
  * remove 2 lower bits (==0) modulo
@@ -135,8 +136,8 @@ void debug_destroyAllocator(allocator_t* debugAllocator)
             fprintf(stderr, " bytes" NORMAL "\n");
         }
 #else
-        fprintf(stderr, RED(BOLD) "Leak of %d bytes in %d allocation%s" NORMAL "\n", leakSize,
-                nbLeaks, nbLeaks > 1 ? "s." : ".");
+        fprintf(stderr, RED(BOLD) "Leak of %d bytes in %d allocation%s" NORMAL "\n", leakSize, nbLeaks,
+                nbLeaks > 1 ? "s." : ".");
 #endif
     }
 #ifdef VERBOSE

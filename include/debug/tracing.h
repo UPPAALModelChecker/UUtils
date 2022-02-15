@@ -13,11 +13,11 @@
 #define DEBUG_TRACING_H
 
 #include <iostream>
+#include <set>
 #include <sstream>
+#include <string>
 #include <vector>
 #include <chrono>
-#include <string>
-#include <set>
 
 namespace tracing
 {
@@ -45,16 +45,13 @@ namespace tracing
             time_point ts;
             const actor_t& id;
             std::string msg;
-            entry_t(time_point ts, const actor_t& id, std::string msg):
-                ts{ts}, id{id}, msg{std::move(msg)}
-            {}
+            entry_t(time_point ts, const actor_t& id, std::string msg): ts{ts}, id{id}, msg{std::move(msg)} {}
         };
         std::vector<entry_t> entries;  // the log entries
 
     public:
         trace_t(std::ostream& os, bool record = false, bool show_time = false):
-            os{os}, record{record}, show_time{show_time},
-            t0{std::chrono::high_resolution_clock::now()}
+            os{os}, record{record}, show_time{show_time}, t0{std::chrono::high_resolution_clock::now()}
         {
             auto id = add_("TRC");
             log(os, id, "started");

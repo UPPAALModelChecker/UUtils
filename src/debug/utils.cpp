@@ -14,11 +14,12 @@
  *
  **********************************************************************/
 
+#include "io/FileStreamBuffer.h"
+#include "base/bitstring.h"
+#include "debug/macros.h"
+
 #include <stdlib.h>
 #include <string.h>
-#include "io/FileStreamBuffer.h"
-#include "debug/macros.h"
-#include "base/bitstring.h"
 
 /* wrap FILE* out to std::ostream& os
  */
@@ -74,8 +75,7 @@ void debug_printBitMatrix(FILE* out, const uint32_t* s, cindex_t dim)
 
 /* Call printDiffBits for every int to print.
  */
-std::ostream& debug_cppPrintDiffBitstrings(std::ostream& out, const uint32_t* s1,
-                                           const uint32_t* s2, size_t n)
+std::ostream& debug_cppPrintDiffBitstrings(std::ostream& out, const uint32_t* s1, const uint32_t* s2, size_t n)
 {
     if (n) {
         /* for 2nd pass: revert order of s1 s2
@@ -230,8 +230,7 @@ void debug_printRealVector(FILE* out, const double* data, size_t size)
 /* Similar to dbm_printDiff print 2 vectors,
  * test diff and highlight it.
  */
-std::ostream& debug_cppPrintDiffVectors(std::ostream& out, const int32_t* vec1, const int32_t* vec2,
-                                        size_t size)
+std::ostream& debug_cppPrintDiffVectors(std::ostream& out, const int32_t* vec1, const int32_t* vec2, size_t size)
 {
     size_t i;
     assert(size == 0 || (vec1 && vec2));
@@ -393,8 +392,8 @@ void debug_fixGeneratedBits(uint32_t* bits, size_t bitSize, size_t bitStringSize
     uint32_t* end = bits + bitSize;
 
     ASSERT(base_countBitsN(bits, bitSize) <= bitStringSize,
-           fprintf(stderr, "Number of bits(%d) > requested bitstring size(%zd)\n",
-                   base_countBitsN(bits, bitSize), bitStringSize));
+           fprintf(stderr, "Number of bits(%d) > requested bitstring size(%zd)\n", base_countBitsN(bits, bitSize),
+                   bitStringSize));
 
     if (start < end && bitSize) {
         uint32_t nbReset = 0;

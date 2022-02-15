@@ -141,20 +141,19 @@
  * to print debug information if the
  * assertion is violated.
  */
-#define ASSERT(COND, PRINTME)                                                             \
-    do {                                                                                  \
-        if (!(COND)) {                                                                    \
-            PRINT_COLOR(DEFAULT_ERR, RED(BOLD));                                          \
-            PRINT_FILE(DEFAULT_ERR);                                                      \
-            PRINT(DEFAULT_ERR, "(");                                                      \
-            PRINT_INT(DEFAULT_ERR, __LINE__);                                             \
-            PRINT(DEFAULT_ERR, ") ");                                                     \
-            PRINT(DEFAULT_ERR, __PRETTY_FUNCTION__);                                      \
-            PRINT(DEFAULT_ERR,                                                            \
-                  ": Assertion `" MAGENTA(BOLD) #COND RED(BOLD) "' failed." NORMAL "\n"); \
-            PRINTME;                                                                      \
-            abort();                                                                      \
-        }                                                                                 \
+#define ASSERT(COND, PRINTME)                                                                          \
+    do {                                                                                               \
+        if (!(COND)) {                                                                                 \
+            PRINT_COLOR(DEFAULT_ERR, RED(BOLD));                                                       \
+            PRINT_FILE(DEFAULT_ERR);                                                                   \
+            PRINT(DEFAULT_ERR, "(");                                                                   \
+            PRINT_INT(DEFAULT_ERR, __LINE__);                                                          \
+            PRINT(DEFAULT_ERR, ") ");                                                                  \
+            PRINT(DEFAULT_ERR, __PRETTY_FUNCTION__);                                                   \
+            PRINT(DEFAULT_ERR, ": Assertion `" MAGENTA(BOLD) #COND RED(BOLD) "' failed." NORMAL "\n"); \
+            PRINTME;                                                                                   \
+            abort();                                                                                   \
+        }                                                                                              \
     } while (0) /* standard trick to make it a statement */
 
 /* Like assert but controlled by another flag
@@ -205,9 +204,8 @@
 #define RAND() ((rand() ^ (rand() << 16)) & 0x7fffffff)
 
 /* include inttypes.h for this */
-#define RAND64()                                                                            \
-    ((((uint64_t)rand()) << 48) | (((uint64_t)rand()) << 32) | (((uint64_t)rand()) << 16) | \
-     (((uint64_t)rand())))
+#define RAND64() \
+    ((((uint64_t)rand()) << 48) | (((uint64_t)rand()) << 32) | (((uint64_t)rand()) << 16) | (((uint64_t)rand())))
 
 #endif /* INTEL_ARCH */
 

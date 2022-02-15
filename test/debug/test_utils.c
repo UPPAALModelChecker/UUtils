@@ -20,12 +20,13 @@
 #undef NDEBUG
 #endif
 
+#include "base/bitstring.h"
+#include "base/intutils.h"
+#include "debug/macros.h"
+
+#include <assert.h>
 #include <stdlib.h>
 #include <time.h>
-#include <assert.h>
-#include "base/intutils.h"
-#include "base/bitstring.h"
-#include "debug/macros.h"
 
 /** Dummy print for testing.
  */

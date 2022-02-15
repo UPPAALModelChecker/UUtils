@@ -20,8 +20,8 @@
 // Should be tested with and without -DNO_NEW_MONITOR
 
 #include <iostream>
-#include <stdlib.h>
 #include <new>
+#include <stdlib.h>
 
 //#define NNEW_INFO
 //#define NDELETE_INFO
