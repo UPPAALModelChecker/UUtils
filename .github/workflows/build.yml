@@ -33,13 +33,15 @@ jobs:
     - name: Get dependencies
       run: |
           vcpkg integrate install
+          vcpkg install boost --triplet x64-windows
           vcpkg install doctest --triplet x64-windows
     - name: Build and test
       run: |
           mkdir build
           cd build
-          cmake "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
+          cmake -DTESTING=yes "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
           cmake --build .
+          ctest
   build-macos:
     runs-on: macos-latest
     steps:
