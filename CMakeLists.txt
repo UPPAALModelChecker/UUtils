@@ -17,7 +17,7 @@ include_directories("include")
 
 find_library(xxhash NAMES xxhash xxHash)
 if(NOT xxhash)
-    message("XXHash not found. Downloading wia fetchContent")
+    message("XXHash not found. Downloading via fetchContent")
     include(FetchContent)
     FetchContent_Declare(xxhashc
         GIT_REPOSITORY https://github.com/Cyan4973/xxHash.git
@@ -43,4 +43,4 @@ write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/UUtilsConfigVersion
 install(EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/UUtils/ NAMESPACE UUtils::)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/UUtilsConfigVersion.cmake
-        DESTINATION lib/cmake/UUtils )
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/UUtils )
