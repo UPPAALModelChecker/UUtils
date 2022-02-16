@@ -23,9 +23,9 @@ jobs:
       run: |
           mkdir build
           cd build
-          cmake -DTESTING=yes ..
-          cmake --build .
-          ctest
+          cmake -DTESTING=yes -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --config Release
+          ctest -C Release
   build-win:
     runs-on: windows-latest
     steps:
@@ -39,9 +39,9 @@ jobs:
       run: |
           mkdir build
           cd build
-          cmake -DTESTING=yes "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
-          cmake --build .
-          ctest
+          cmake -DCMAKE_BUILD_TYPE=Release -DTESTING=yes "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
+          cmake --build . --config Release
+          ctest -C Release
   build-macos:
     runs-on: macos-latest
     steps:
@@ -52,7 +52,7 @@ jobs:
       run: |
           mkdir build
           cd build
-          cmake -DTESTING=yes ..
-          cmake --build .
-          ctest
+          cmake -DCMAKE_BUILD_TYPE=Release -DTESTING=yes ..
+          cmake --build . --config Release
+          ctest -C Release
 
