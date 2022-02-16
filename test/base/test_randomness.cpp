@@ -99,7 +99,7 @@ static bool frequency_analysis(int n, int values[], int range, double alpha)
 /** returns true if passed, otherwise false. */
 static bool floating_point_test(int n, int range, int offset, double alpha)
 {
-    int values[range];
+    int* values = (int*)calloc(range, sizeof(int));
     for (int i = 0; i < range; ++i)
         values[i] = 0;
     RandomGenerator rand;
@@ -119,13 +119,15 @@ static bool floating_point_test(int n, int range, int offset, double alpha)
         }
     }
     cout << endl;
-    return frequency_analysis(n, values, range, alpha);
+    bool output = frequency_analysis(n, values, range, alpha);
+    free(values);
+    return output;
 }
 
 /** returns true if passed, otherwise false. */
 static bool integer_test(int n, int range, int offset, double alpha)
 {
-    int values[range];
+    int* values = (int*)calloc(range, sizeof(int));
     for (int i = 0; i < range; ++i)
         values[i] = 0;
     RandomGenerator rand;
@@ -146,7 +148,9 @@ static bool integer_test(int n, int range, int offset, double alpha)
         }
     }
     cout << endl;
-    return frequency_analysis(n, values, range, alpha);
+    bool output = frequency_analysis(n, values, range, alpha);
+    free(values);
+    return output;
 }
 
 int main(const int, const char*[])
