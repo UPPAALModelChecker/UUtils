@@ -116,7 +116,7 @@ static void test_printBitstring(uint32_t maxSize)
 static void test_generateBits(uint32_t size)
 {
     uint32_t stringSize = bits2intsize(size);
-    uint32_t bitString[stringSize];
+    uint32_t* bitString = malloc(stringSize);
     uint32_t i, max;
     debug_generateBits(bitString, stringSize, size, ZERO);
     assert(base_countBitsN(bitString, stringSize) == size);
@@ -127,6 +127,7 @@ static void test_generateBits(uint32_t size)
     for (i = max; i < stringSize * 32; ++i) {
         assert(base_getOneBit(bitString, i) == 0);
     }
+    free(bitString);
 }
 
 int main(int argc, char* argv[])

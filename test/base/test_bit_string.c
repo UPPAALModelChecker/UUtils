@@ -68,9 +68,9 @@ static void test_invalidate(uint32_t* table, uint32_t n)
 static void test_bits2indexTable(uint32_t size)
 {
     uint32_t intSize = bits2intsize(size);
-    uint32_t bitString[intSize];
+    uint32_t* bitString = malloc(intSize);
     uint32_t tableSize = intSize * 32;
-    uint32_t table[tableSize];
+    uint32_t* table = malloc(tableSize);
     uint32_t k;
 
     printf("Testing bits2indexTable(%u)\n", size);
@@ -98,6 +98,8 @@ static void test_bits2indexTable(uint32_t size)
         }
         assert(counter == size);
     }
+    free(bitString);
+    free(table);
 }
 
 static void tests(int bitSize)
