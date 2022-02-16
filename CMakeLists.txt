@@ -8,7 +8,7 @@ if(TESTING)
     enable_testing()
 endif(TESTING)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 cmake_policy(SET CMP0048 NEW) # project() command manages VERSION variables
 
 
