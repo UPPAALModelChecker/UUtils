@@ -21,11 +21,12 @@ jobs:
       run: sudo apt-get update && sudo apt-get install libboost-all-dev doctest-dev
     - name: Build and test
       run: |
+          export CTEST_OUTPUT_ON_FAILURE=1
           mkdir build
           cd build
-          cmake -DTESTING=yes ..
-          cmake --build .
-          ctest
+          cmake -DTESTING=yes -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --config Release
+          ctest -C Release
   build-win:
     runs-on: windows-latest
     steps:
@@ -33,13 +34,15 @@ jobs:
     - name: Get dependencies
       run: |
           vcpkg integrate install
+          vcpkg install boost --triplet x64-windows
           vcpkg install doctest --triplet x64-windows
     - name: Build and test
       run: |
           mkdir build
           cd build
-          cmake "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
-          cmake --build .
+          cmake -DCMAKE_BUILD_TYPE=Release -DTESTING=yes "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
+          cmake --build . --config Release
+          ctest -C Release --output-on-failure
   build-macos:
     runs-on: macos-latest
     steps:
@@ -48,9 +51,10 @@ jobs:
       run: brew install boost doctest
     - name: Build and test
       run: |
+          export CTEST_OUTPUT_ON_FAILURE=1
           mkdir build
           cd build
-          cmake -DTESTING=yes ..
-          cmake --build .
-          ctest
+          cmake -DCMAKE_BUILD_TYPE=Release -DTESTING=yes ..
+          cmake --build . --config Release
+          ctest -C Release
 

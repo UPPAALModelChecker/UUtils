@@ -295,7 +295,7 @@ int32_t* base_new(std::size_t size, void*) { return new int32_t[size]; }
 
 /* Wrap the call to delete.
  */
-void base_delete(void* mem, size_t unused1, void* unused2) { delete[](int32_t*) mem; }
+void base_delete(void* mem, size_t, void*) { delete[](int32_t*) mem; }
 
 /* Instance of allocator_t based on new
  */
