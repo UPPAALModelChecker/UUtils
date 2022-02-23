@@ -1,5 +1,5 @@
 # UUtils
-The spookiest utility library
+The spookiest utility library 
 
 This is a utility library used in [UDBM](https://github.com/UPPAALModelChecker/UDBM) and [UCDD](https://github.com/UPPAALModelChecker/UCDD)
 
