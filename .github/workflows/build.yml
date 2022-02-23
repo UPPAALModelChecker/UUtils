@@ -18,39 +18,49 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Get dependencies
-      run: sudo apt-get update && sudo apt-get install libboost-all-dev doctest-dev
+      run: |
+          sudo apt-get update
+          sudo apt-get install libboost-all-dev doctest-dev
+          ./getlibs.sh
     - name: Build and test
       run: |
           mkdir build
           cd build
           cmake -DTESTING=yes ..
           cmake --build .
-          ctest
+          ctest --output-on-failure
   build-win:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Get dependencies
       run: |
-          vcpkg integrate install
-          vcpkg install doctest --triplet x64-windows
+          sudo apt-get update
+          sudo apt-get install cmake make g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools wine wine-binfmt doctest-dev libboost-all-dev
+          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
+          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          CMAKE_TOOLCHAIN_FILE="$(pwd)/toolchains/mingw.cmake" ./getlibs.sh
     - name: Build and test
       run: |
+          export CTEST_OUTPUT_ON_FAILURE=1
           mkdir build
           cd build
-          cmake "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
+          cmake -DSTATIC=yes "-DCMAKE_TOOLCHAIN_FILE=../toolchains/mingw.cmake" ..
           cmake --build .
+          ctest --output-on-failure
   build-macos:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - name: Get dependencies
-      run: brew install boost doctest
+      run: |
+          brew install boost doctest
+          ./getlibs.sh
     - name: Build and test
       run: |
           mkdir build
           cd build
           cmake -DTESTING=yes ..
           cmake --build .
-          ctest
+          ctest --output-on-failure
 
