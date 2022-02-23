@@ -18,6 +18,7 @@ if (TESTING)
   endforeach()
 
   add_test(NAME base_meta COMMAND test_meta)
+  add_test(NAME test_sequencefilter COMMAND test_sequencefilter)
 
   add_test(NAME base_allocator_10000 COMMAND test_allocator 10000)
   add_test(NAME base_allocator_30000 COMMAND test_allocator 30000)
