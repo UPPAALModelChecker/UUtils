@@ -23,7 +23,8 @@ foreach(MODULE ${MODULES})
   endif(TESTING)
 endforeach()
 
-find_package(xxHash 0.8.0 REQUIRED COMPONENTS xxhash PATHS ${CMAKE_CURRENT_SOURCE_DIR}/libs/xxHash)
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${CMAKE_CURRENT_SOURCE_DIR}/libs")
+find_package(xxHash 0.8.0 REQUIRED COMPONENTS xxhash)
 target_link_libraries(hash PUBLIC xxHash::xxhash)
 
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/UUtilsConfigVersion.cmake VERSION ${PACKAGE_VERSION} COMPATIBILITY SameMajorVersion)
