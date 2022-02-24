@@ -2,9 +2,9 @@ file(GLOB base_source "*.c" "*.cpp")
 add_library(base ${base_source})
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
-  target_link_libraries(base udebug iphlpapi psapi)
+    target_link_libraries(base PRIVATE udebug iphlpapi psapi PUBLIC hash)
 else()
-  target_link_libraries(base udebug)
+    target_link_libraries(base PRIVATE udebug PUBLIC hash)
 endif()
 
 target_include_directories(base

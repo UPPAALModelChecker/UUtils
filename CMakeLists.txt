@@ -15,17 +15,6 @@ cmake_policy(SET CMP0048 NEW) # project() command manages VERSION variables
 set(MODULES base debug hash io)
 include_directories("include")
 
-find_library(xxhash NAMES xxhash xxHash)
-if(NOT xxhash)
-    message("XXHash not found. Downloading via fetchContent")
-    include(FetchContent)
-    FetchContent_Declare(xxhashc
-        GIT_REPOSITORY https://github.com/Cyan4973/xxHash.git
-        GIT_TAG 35b0373c697b5f160d3db26b1cbb45a0d5ba788c
-        )
-    FetchContent_MakeAvailable(xxhashc)
-    include_directories("${xxhashc_SOURCE_DIR}")
-endif()
 
 foreach(MODULE ${MODULES})
   add_subdirectory("src/${MODULE}")
@@ -34,9 +23,9 @@ foreach(MODULE ${MODULES})
   endif(TESTING)
 endforeach()
 
-if(xxhash)
-target_link_libraries(hash xxhash)
-endif(xxhash)
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${CMAKE_CURRENT_SOURCE_DIR}/libs")
+find_package(xxHash 0.8.0 REQUIRED COMPONENTS xxhash)
+target_link_libraries(hash PUBLIC xxHash::xxhash)
 
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/UUtilsConfigVersion.cmake VERSION ${PACKAGE_VERSION} COMPATIBILITY SameMajorVersion)
 
