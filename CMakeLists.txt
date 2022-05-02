@@ -20,7 +20,7 @@ find_package(xxHash 0.8.0 REQUIRED COMPONENTS xxhash)
 
 message(STATUS "Boost include: ${Boost_INCLUDE_DIRS}")
 
-include_directories("include" ${Boost_INCLUDE_DIRS})
+include_directories("include")
 
 foreach(MODULE ${MODULES})
   add_subdirectory("src/${MODULE}")
