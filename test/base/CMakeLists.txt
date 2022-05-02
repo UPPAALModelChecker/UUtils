@@ -17,6 +17,12 @@ if (TESTING)
     target_link_libraries(${test_target} ${libs})
   endforeach()
 
+  target_include_directories(test_randomness PRIVATE "${Boost_INCLUDE_DIRS}")
+
+  add_executable(bm_random bm_random.cpp)
+  target_link_libraries(bm_random base)
+  target_include_directories(bm_random PRIVATE "${Boost_INCLUDE_DIRS}")
+
   add_test(NAME base_meta COMMAND test_meta)
   add_test(NAME test_sequencefilter COMMAND test_sequencefilter)
 
