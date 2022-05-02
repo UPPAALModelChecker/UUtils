@@ -47,8 +47,26 @@ public:
     /** exponential distribution for double with given rate */
     double exp(double rate);
 
+    /** arcsine distribution with given min and max values */
+    double arcsine(const double minv, const double maxv);
+
+    /** beta distribution with given min and max values */
+    double beta(const double alpha, const double beta);
+
+    /** gamma distribution with given shape and max scale */
+    double gamma(const double shape, const double scale);
+
     /** Gaussian/Normal distribution with given mean and standard deviation */
     double normal(double mean, double stddev);
+
+    /** Poisson distribution with given mean */
+    double poisson(const double mean);
+
+    /** Weibull distribution with given shape and max scale */
+    double weibull(const double shape, const double scale);
+
+    /** triangular distribution with given lower, mode and upper points */
+    double tri(const double lower, const double mode, const double upper);
 
 private:
     struct internalstate;              // hide the complexity of internal details

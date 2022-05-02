@@ -17,6 +17,9 @@ if (TESTING)
     target_link_libraries(${test_target} ${libs})
   endforeach()
 
+  add_executable(bm_random bm_random.cpp)
+  target_link_libraries(bm_random base)
+
   add_test(NAME base_meta COMMAND test_meta)
   add_test(NAME test_sequencefilter COMMAND test_sequencefilter)
 

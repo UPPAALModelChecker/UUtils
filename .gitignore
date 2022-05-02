@@ -1,2 +1,4 @@
-/build
-/libs
+build
+libs
+cmake-build-*
+.idea
