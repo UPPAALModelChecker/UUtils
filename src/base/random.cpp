@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // This file is a part of UPPAAL.
-// Copyright (c) 2011-2020, Aalborg University.
+// Copyright (c) 2011-2022, Aalborg University.
 // All rights reserved.
 // Author: Marius Mikucionis marius@cs.aau.dk
 //
