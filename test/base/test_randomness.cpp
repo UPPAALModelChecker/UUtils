@@ -8,10 +8,9 @@
 
 #include <iomanip>
 #include <iostream>
-#include <random>
-#include <numeric>
 #include <limits>
-
+#include <numeric>
+#include <random>
 #include <cmath>
 
 static double fracInRange(const int* values, int length, double from, double till)
@@ -197,9 +196,9 @@ std::vector<step_t> histogram(Generator&& gen, size_t value_count, size_t bar_co
     auto values = std::vector<double>(value_count);
     std::generate(std::begin(values), std::end(values), gen);
     if (std::isnan(min_value))
-        min_value= *std::min_element(std::begin(values), std::end(values));
+        min_value = *std::min_element(std::begin(values), std::end(values));
     if (std::isnan(max_value))
-        max_value= *std::max_element(std::begin(values), std::end(values));
+        max_value = *std::max_element(std::begin(values), std::end(values));
 
     auto range = max_value - min_value;
     if (range == 0.0)
@@ -208,10 +207,10 @@ std::vector<step_t> histogram(Generator&& gen, size_t value_count, size_t bar_co
     res[0].from = min_value;
     for (auto i = 1u; i < bar_count; ++i) {
         res[i].from = min_value + range * i / bar_count;
-        res[i-1].till = res[i].from;
+        res[i - 1].till = res[i].from;
     }
     res.back().till = max_value;
-    for (const auto& value :  values) {
+    for (const auto& value : values) {
         auto i = static_cast<size_t>((value - min_value) * bar_count / range);
         if (i == bar_count)
             i = bar_count - 1;
@@ -247,8 +246,8 @@ void chi_squared_test(const std::vector<step_t>& hist, CumFn&& expected, const d
         chi_sq += diff * diff / expect;
     }
     auto chi_sq_dist = boost::math::chi_squared_distribution<double>{static_cast<double>(hist.size()) - 1};
-    auto lower_critical_value = quantile(chi_sq_dist, alpha/2);
-    auto upper_critical_value = quantile(chi_sq_dist, 1.0-alpha/2);
+    auto lower_critical_value = quantile(chi_sq_dist, alpha / 2);
+    auto upper_critical_value = quantile(chi_sq_dist, 1.0 - alpha / 2);
     if (chi_sq < lower_critical_value)
         throw std::logic_error{"data seems to be too good to be random"};
     if (upper_critical_value < chi_sq)
@@ -271,9 +270,9 @@ void test_random_uniform(const size_t value_count = 10000, const double alpha = 
     constexpr auto from = -100.;
     constexpr auto till = 200.;
     constexpr auto range = till - from;
-    auto uni_hist = histogram([&](){ return rng.uni_r(from, till); }, value_count, 30, from, till);
-    //std::cout << uni_hist;
-    auto uni_cum_fn = [&](double x){ return (x-from) / range * value_count; };
+    auto uni_hist = histogram([&]() { return rng.uni_r(from, till); }, value_count, 30, from, till);
+    // std::cout << uni_hist;
+    auto uni_cum_fn = [&](double x) { return (x - from) / range * value_count; };
     chi_squared_test(uni_hist, uni_cum_fn, alpha);
 }
 
@@ -283,13 +282,13 @@ void test_random_triangular(const size_t value_count = 10000, const double alpha
     constexpr auto till = 200.;
     constexpr auto mode = 100.;
     constexpr auto range = till - from;
-    auto tri_hist = histogram([&](){ return rng.tri(from, mode, till); }, value_count, 30, from, till);
-    //std::cout << uni_hist;
-    auto tri_cum_fn = [&](double x){
+    auto tri_hist = histogram([&]() { return rng.tri(from, mode, till); }, value_count, 30, from, till);
+    // std::cout << uni_hist;
+    auto tri_cum_fn = [&](double x) {
         if (x <= mode)
-            return (x-from)*(x-from) / range / (mode - from) * value_count;
+            return (x - from) * (x - from) / range / (mode - from) * value_count;
         else
-            return (1. - (till-x)*(till-x) / range / (till - mode)) * value_count;
+            return (1. - (till - x) * (till - x) / range / (till - mode)) * value_count;
     };
     chi_squared_test(tri_hist, tri_cum_fn, alpha);
 }
@@ -297,9 +296,9 @@ void test_random_triangular(const size_t value_count = 10000, const double alpha
 void test_random_exponential(const size_t value_count = 20000, const double alpha = 0.05)
 {
     constexpr auto rate = 0.5;
-    auto exp_hist = histogram([&](){ return rng.exp(rate); }, value_count, 30, 0);
-    //std::cout << exp_hist;
-    auto exp_cum_fn = [&](double x){ return (1.0 - std::exp(-rate*x)) * value_count; };
+    auto exp_hist = histogram([&]() { return rng.exp(rate); }, value_count, 30, 0);
+    // std::cout << exp_hist;
+    auto exp_cum_fn = [&](double x) { return (1.0 - std::exp(-rate * x)) * value_count; };
     chi_squared_test(exp_hist, exp_cum_fn, alpha);
 }
 
@@ -307,28 +306,28 @@ void test_random_beta(const size_t value_count = 20000, const double alpha = 0.0
 {
     constexpr auto a = 0.5;
     constexpr auto b = 0.5;
-    auto beta_hist = histogram([&](){ return rng.beta(a,b); }, value_count, 30, 0, 1);
-    //std::cout << beta_hist;
-    auto beta_cum_fn = [&](double x){ return boost::math::ibeta(a, b, x) * value_count; };
+    auto beta_hist = histogram([&]() { return rng.beta(a, b); }, value_count, 30, 0, 1);
+    // std::cout << beta_hist;
+    auto beta_cum_fn = [&](double x) { return boost::math::ibeta(a, b, x) * value_count; };
     chi_squared_test(beta_hist, beta_cum_fn, alpha);
 }
 
 void test_random_gamma(const size_t value_count = 20000, const double alpha = 0.05)
 {
-    constexpr auto shape = 2.; // k
-    constexpr auto scale = 2.; // theta
-    auto gamma_hist = histogram([&](){ return rng.gamma(shape, scale); }, value_count, 30, 0);
+    constexpr auto shape = 2.;  // k
+    constexpr auto scale = 2.;  // theta
+    auto gamma_hist = histogram([&]() { return rng.gamma(shape, scale); }, value_count, 30, 0);
     std::cout << gamma_hist;
-    auto gamma_cum_fn = [&](double x){ return value_count; };
+    auto gamma_cum_fn = [&](double x) { return value_count; };
     chi_squared_test(gamma_hist, gamma_cum_fn, alpha);
 }
 
 void test_random_poisson(const size_t value_count = 20000, const double alpha = 0.05)
 {
     constexpr auto rate = 0.5;
-    auto poisson_hist = histogram([&](){ return rng.poisson(1./rate); }, value_count, 30, 0);
-    //std::cout << exp_hist;
-    auto poisson_cum_fn = [&](double x){ return value_count; };
+    auto poisson_hist = histogram([&]() { return rng.poisson(1. / rate); }, value_count, 30, 0);
+    // std::cout << exp_hist;
+    auto poisson_cum_fn = [&](double x) { return value_count; };
     chi_squared_test(poisson_hist, poisson_cum_fn, alpha);
 }
 
@@ -337,22 +336,21 @@ void test_random_arcsine(const size_t value_count = 20000, const double alpha = 
     constexpr auto from = -100.;
     constexpr auto till = 200.;
     constexpr auto range = till - from;
-    auto arcsine_hist = histogram([&](){ return rng.arcsine(from, till); }, value_count, 30, from, till);
-    //std::cout << arcsine_hist;
-    auto arcsine_cum_fn = [&](double x){ return 2./M_PI*std::asin(std::sqrt(x)) * value_count; };
+    auto arcsine_hist = histogram([&]() { return rng.arcsine(from, till); }, value_count, 30, from, till);
+    // std::cout << arcsine_hist;
+    auto arcsine_cum_fn = [&](double x) { return 2. / M_PI * std::asin(std::sqrt(x)) * value_count; };
     chi_squared_test(arcsine_hist, arcsine_cum_fn, alpha);
 }
 
 void test_random_weibull(const size_t value_count = 20000, const double alpha = 0.05)
 {
-    constexpr auto shape = 1.5; // k
-    constexpr auto scale = 1.; // lambda
-    auto weibull_hist = histogram([&](){ return rng.weibull(shape, scale); }, value_count, 30, 0);
-    //std::cout << weibull_hist;
-    auto weibull_cum_fn = [&](double x){ return (1.-std::exp(-std::pow(x/scale, shape))) * value_count; };
+    constexpr auto shape = 1.5;  // k
+    constexpr auto scale = 1.;   // lambda
+    auto weibull_hist = histogram([&]() { return rng.weibull(shape, scale); }, value_count, 30, 0);
+    // std::cout << weibull_hist;
+    auto weibull_cum_fn = [&](double x) { return (1. - std::exp(-std::pow(x / scale, shape))) * value_count; };
     chi_squared_test(weibull_hist, weibull_cum_fn, alpha);
 }
-
 
 int main(const int, const char*[])
 {

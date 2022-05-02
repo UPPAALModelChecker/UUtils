@@ -10,17 +10,17 @@
 
 #include "base/random.h"
 
-#include <boost/random.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
-#include <boost/random/uniform_real_distribution.hpp>
 #include <boost/math/distributions/arcsine.hpp>
+#include <boost/random.hpp>
 #include <boost/random/beta_distribution.hpp>
 #include <boost/random/exponential_distribution.hpp>
 #include <boost/random/gamma_distribution.hpp>
 #include <boost/random/normal_distribution.hpp>
 #include <boost/random/poisson_distribution.hpp>
-#include <boost/random/weibull_distribution.hpp>
 #include <boost/random/triangle_distribution.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
+#include <boost/random/weibull_distribution.hpp>
 // #include <random> standard implementation is 3-4x slower than boost (on Linux), see bm_random.cpp
 #include <cassert>
 
@@ -74,20 +74,20 @@ double RandomGenerator::exp(const double rate)
 double RandomGenerator::arcsine(const double minv, const double maxv)
 {
     assert(minv <= maxv);
-    boost::math::arcsine_distribution<double> dis{minv,maxv};
+    boost::math::arcsine_distribution<double> dis{minv, maxv};
     return quantile(dis, uniform_real_distribution<double>{0.0, 1.0}(s->rnd));
 }
 
 double RandomGenerator::beta(const double alpha, const double beta)
 {
     assert(alpha > 0 && beta > 0);
-    return beta_distribution<double>{alpha,beta}(s->rnd);
+    return beta_distribution<double>{alpha, beta}(s->rnd);
 }
 
 double RandomGenerator::gamma(const double shape, const double scale)
 {
     assert(shape > 0 && scale > 0);
-    return gamma_distribution<double>{shape,scale}(s->rnd);
+    return gamma_distribution<double>{shape, scale}(s->rnd);
 }
 
 double RandomGenerator::normal(const double mean, const double stddev)
@@ -98,17 +98,17 @@ double RandomGenerator::normal(const double mean, const double stddev)
 double RandomGenerator::poisson(const double mean_rate)
 {
     assert(mean_rate > 0);
-    return poisson_distribution<int,double>{mean_rate}(s->rnd);
+    return poisson_distribution<int, double>{mean_rate}(s->rnd);
 }
 
 double RandomGenerator::weibull(const double shape, const double scale)
 {
     assert(shape > 0 && scale > 0);
-    return weibull_distribution<double>{shape,scale}(s->rnd);
+    return weibull_distribution<double>{shape, scale}(s->rnd);
 }
 
 double RandomGenerator::tri(const double lower, const double mode, const double upper)
 {
     assert(lower <= mode && mode <= upper);
-    return triangle_distribution<double>{lower,mode,upper}(s->rnd);
+    return triangle_distribution<double>{lower, mode, upper}(s->rnd);
 }
