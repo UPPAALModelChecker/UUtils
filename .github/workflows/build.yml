@@ -24,7 +24,7 @@ jobs:
           ./getlibs.sh
     - name: Build and test
       run: |
-          cmake -DTESTING=yes .. -B build
+          cmake -S . -B build -DTESTING=yes
           cmake --build build
           (cd build && ctest --output-on-failure)
   build-win:
@@ -40,7 +40,7 @@ jobs:
           CMAKE_TOOLCHAIN_FILE="$(pwd)/toolchains/mingw.cmake" ./getlibs.sh
     - name: Build and test
       run: |
-          cmake -DSTATIC=yes "-DCMAKE_TOOLCHAIN_FILE=../toolchains/mingw.cmake" .. -B build
+          cmake -S . -B build -DSTATIC=yes "-DCMAKE_TOOLCHAIN_FILE=./toolchains/mingw.cmake"
           cmake --build build
           (cd build && ctest --output-on-failure)
   build-macos:
@@ -53,6 +53,6 @@ jobs:
           ./getlibs.sh
     - name: Build and test
       run: |
-          cmake -DTESTING=yes .. -B build
+          cmake -S . -B build -DTESTING=yes
           cmake --build build
-		  (cd build && ctest --output-on-failure)
+          (cd build && ctest --output-on-failure)
