@@ -24,11 +24,9 @@ jobs:
           ./getlibs.sh
     - name: Build and test
       run: |
-          mkdir build
-          cd build
-          cmake -DTESTING=yes ..
-          cmake --build .
-          ctest --output-on-failure
+          cmake -DTESTING=yes .. -B build
+          cmake --build build
+          (cd build && ctest --output-on-failure)
   build-win:
     runs-on: ubuntu-latest
     steps:
@@ -42,12 +40,9 @@ jobs:
           CMAKE_TOOLCHAIN_FILE="$(pwd)/toolchains/mingw.cmake" ./getlibs.sh
     - name: Build and test
       run: |
-          export CTEST_OUTPUT_ON_FAILURE=1
-          mkdir build
-          cd build
-          cmake -DSTATIC=yes "-DCMAKE_TOOLCHAIN_FILE=../toolchains/mingw.cmake" ..
-          cmake --build .
-          ctest --output-on-failure
+          cmake -DSTATIC=yes "-DCMAKE_TOOLCHAIN_FILE=../toolchains/mingw.cmake" .. -B build
+          cmake --build build
+          (cd build && ctest --output-on-failure)
   build-macos:
     runs-on: macos-latest
     steps:
@@ -58,9 +53,6 @@ jobs:
           ./getlibs.sh
     - name: Build and test
       run: |
-          mkdir build
-          cd build
-          cmake -DTESTING=yes ..
-          cmake --build .
-          ctest --output-on-failure
-
+          cmake -DTESTING=yes .. -B build
+          cmake --build build
+		  (cd build && ctest --output-on-failure)
