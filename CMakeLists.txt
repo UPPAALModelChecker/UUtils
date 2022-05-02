@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(UUtils VERSION 1.1.1 HOMEPAGE_URL "https://github.com/UPPAALModelChecker/UUtils" LANGUAGES CXX C)
+project(UUtils VERSION 1.2.0 HOMEPAGE_URL "https://github.com/UPPAALModelChecker/UUtils" LANGUAGES CXX C)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
