@@ -57,11 +57,18 @@ int32_t RandomGenerator::uni(const int32_t from, const int32_t till)
 
 double RandomGenerator::uni_1() { return uniform_real_distribution<double>{0.0, 1.0}(s->rnd); }
 
-double RandomGenerator::uni_r(const double max) { return uniform_real_distribution<double>{0.0, max}(s->rnd); }
+double RandomGenerator::uni_r(const double max)
+{
+    assert(max > 0.);
+    assert(max <= std::numeric_limits<double>::max());
+    return uniform_real_distribution<double>{0.0, max}(s->rnd);
+}
 
 double RandomGenerator::uni_r(const double from, const double till)
 {
-    assert(till - from >= 0);
+    assert(from < till);                                    // contradicts spec: >=from and <till where from==till
+    assert(from >= std::numeric_limits<double>::lowest());  // boost loops on infinities
+    assert(till <= std::numeric_limits<double>::max());
     return uniform_real_distribution<double>{from, till}(s->rnd);
 }
 
@@ -73,6 +80,8 @@ double RandomGenerator::exp(const double rate)
 
 double RandomGenerator::arcsine(const double minv, const double maxv)
 {
+    assert(minv >= std::numeric_limits<double>::lowest());  // boost loops on infinities
+    assert(maxv <= std::numeric_limits<double>::max());
     assert(minv <= maxv);
     boost::math::arcsine_distribution<double> dis{minv, maxv};
     return quantile(dis, uniform_real_distribution<double>{0.0, 1.0}(s->rnd));
@@ -92,6 +101,10 @@ double RandomGenerator::gamma(const double shape, const double scale)
 
 double RandomGenerator::normal(const double mean, const double stddev)
 {
+    assert(mean >= std::numeric_limits<double>::lowest());  // boost loops on infinities
+    assert(mean <= std::numeric_limits<double>::max());
+    assert(stddev >= std::numeric_limits<double>::lowest());  // boost loops on infinities
+    assert(stddev <= std::numeric_limits<double>::max());
     return normal_distribution<double>{mean, stddev}(s->rnd);
 }
 
@@ -109,6 +122,9 @@ double RandomGenerator::weibull(const double shape, const double scale)
 
 double RandomGenerator::tri(const double lower, const double mode, const double upper)
 {
-    assert(lower <= mode && mode <= upper);
+    assert(lower >= std::numeric_limits<double>::lowest());  // boost loops on infinities
+    assert(upper <= std::numeric_limits<double>::max());
+    assert(lower <= mode);
+    assert(mode <= upper);
     return triangle_distribution<double>{lower, mode, upper}(s->rnd);
 }

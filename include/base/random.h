@@ -38,10 +38,14 @@ public:
     /** uniform distribution for double [0,1) */
     double uni_1();
 
-    /** uniform distribution for double [0,max) */
+    /** uniform distribution for double [0,max)
+     * @param max exclusive upper bound should be positive and finite */
     double uni_r(double max);
 
-    /** uniform distribution for double [from,till) */
+    /** uniform distribution for double [from,till)
+     * @param from inclusive lower bound should be finite
+     * @param till exclusive upper bound should be finite
+     */
     double uni_r(double from, double till);
 
     /** exponential distribution for double with given rate */
