@@ -84,12 +84,6 @@ TEST_CASE("uniform floating point")
     CHECK(r < 6);
     r = rng.uni_r(std::numeric_limits<double>::lowest(), 0);
     CHECK(r < 0);
-    r = rng.uni_r(-std::numeric_limits<double>::infinity(), 0);
-    CHECK(r < 0);
     r = rng.uni_r(0, std::numeric_limits<double>::max());
-    CHECK(r >= 0);
-    r = rng.uni_r(0, std::numeric_limits<double>::infinity());
-    CHECK(r >= 0);
-    r = rng.uni_r(std::numeric_limits<double>::infinity());
     CHECK(r >= 0);
 }
