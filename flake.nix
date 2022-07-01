@@ -16,7 +16,7 @@
         crossSystem = nixpkgs.lib.systems.examples.mingwW64;
       });
     in
-    {
+    rec {
 
       # Adds a cross compiling check to package if it is built for a MinGW target
       addCrossCheck = (pkgs: nativePkgs: dv: if !pkgs.stdenv.targetPlatform.isMinGW then dv else
@@ -51,19 +51,22 @@
           doCheck = true;
         }));
 
-      defaultPackage = forAllSystems (system:
+
+      packages.uutils = forAllSystems (system:
         let
           pkgs = nixpkgsFor.${system};
         in
         self.library pkgs pkgs);
 
 
-      crossPackage = forAllSystems (system:
+      packages.crossPackage = forAllSystems (system:
         let
           nativePkgs = nixpkgsFor.${system};
           pkgs = crossNixpkgsFor.${system};
         in
         (self.library pkgs nativePkgs));
+
+      defaultPackage = packages.uutils;
 
     };
 }
