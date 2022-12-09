@@ -14,7 +14,7 @@
  *
  **********************************************************************/
 
-#include "io/file_ostream.hpp"
+#include "io/file_stream.hpp"
 #include "base/bitstring.h"
 #include "debug/macros.h"
 
