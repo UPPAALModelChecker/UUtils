@@ -3,20 +3,19 @@ project(UUtils VERSION 1.2.0 HOMEPAGE_URL "https://github.com/UPPAALModelChecker
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-option(TESTING OFF)
-if(TESTING)
-    enable_testing()
-endif(TESTING)
+include(cmake/stdcpp.cmake)
 
-set(CMAKE_CXX_STANDARD 20)
+option(UUtils_WITH_TESTS OFF)
+
 cmake_policy(SET CMP0048 NEW) # project() command manages VERSION variables
 
 set(MODULES base debug hash io)
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${CMAKE_CURRENT_SOURCE_DIR}/libs")
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 
 set(Boost_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libs/boost")
 find_package(Boost 1.74 REQUIRED)
 find_package(xxHash 0.8.0 REQUIRED COMPONENTS xxhash)
+# include(cmake/utap.cmake)
 
 message(STATUS "Boost include: ${Boost_INCLUDE_DIRS}")
 
@@ -24,9 +23,10 @@ include_directories("include")
 
 foreach(MODULE ${MODULES})
   add_subdirectory("src/${MODULE}")
-  if(TESTING)
+  if(UUtils_WITH_TESTS)
+      enable_testing()
       add_subdirectory("test/${MODULE}")
-  endif(TESTING)
+  endif(UUtils_WITH_TESTS)
 endforeach()
 
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/UUtilsConfigVersion.cmake VERSION ${PACKAGE_VERSION} COMPATIBILITY SameMajorVersion)

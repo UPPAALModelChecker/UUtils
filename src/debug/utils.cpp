@@ -14,21 +14,16 @@
  *
  **********************************************************************/
 
-#include "io/FileStreamBuffer.h"
+#include "io/file_ostream.hpp"
 #include "base/bitstring.h"
 #include "debug/macros.h"
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
-/* wrap FILE* out to std::ostream& os
- */
-#define OUT2OS()                   \
-    io::FileStreamBuffer fsb(out); \
-    std::ostream os(&fsb)
+using fos = io::file_ostream;  /// C FILE to std::ostream adapter
 
-/* Straigth forward randomization of memory.
- */
+/// Straightforward randomization of memory.
 void debug_randomize(void* data, size_t intsize)
 {
     uint32_t* p = (uint32_t*)data;
@@ -51,11 +46,9 @@ std::ostream& debug_cppPrintBitstring(std::ostream& out, const uint32_t* s, size
     }
     return out;
 }
-void debug_printBitstring(FILE* out, const uint32_t* s, size_t n)
-{
-    OUT2OS();
-    debug_cppPrintBitstring(os, s, n);
-}
+
+void debug_printBitstring(FILE* out, const uint32_t* s, size_t n) { debug_cppPrintBitstring(fos{out}, s, n); }
+
 std::ostream& debug_cppPrintBitMatrix(std::ostream& out, const uint32_t* s, cindex_t dim)
 {
     cindex_t i, j;
@@ -67,11 +60,8 @@ std::ostream& debug_cppPrintBitMatrix(std::ostream& out, const uint32_t* s, cind
     }
     return out;
 }
-void debug_printBitMatrix(FILE* out, const uint32_t* s, cindex_t dim)
-{
-    OUT2OS();
-    debug_cppPrintBitMatrix(os, s, dim);
-}
+
+void debug_printBitMatrix(FILE* out, const uint32_t* s, cindex_t dim) { debug_cppPrintBitMatrix(fos{out}, s, dim); }
 
 /* Call printDiffBits for every int to print.
  */
@@ -96,15 +86,15 @@ std::ostream& debug_cppPrintDiffBitstrings(std::ostream& out, const uint32_t* s1
     }
     return out;
 }
+
 void debug_printDiffBitstrings(FILE* out, const uint32_t* s1, const uint32_t* s2, size_t n)
 {
-    OUT2OS();
-    debug_cppPrintDiffBitstrings(os, s1, s2, n);
+    debug_cppPrintDiffBitstrings(fos{out}, s1, s2, n);
 }
 
 /* Print all bits of an int starting from the lower bit.
  */
-std::ostream& debug_cppPrintBits(std::ostream& out, uint32_t i)
+std::ostream& debug_cppPrintBits(std::ostream& os, uint32_t i)
 {
     uint32_t n = 32; /* 32 bits to print */
     do {
@@ -112,26 +102,23 @@ std::ostream& debug_cppPrintBits(std::ostream& out, uint32_t i)
          */
 #ifndef NPRETTY_COLORS
         if ((n & 7) == 4) {
-            out << BLUE(THIN);
+            os << BLUE(THIN);
         } else if ((n & 7) == 0) {
-            out << NORMAL;
+            os << NORMAL;
         }
 #endif
 
-        out << (char)('0' + (i & 1)); /* character '0' + bit */
-        i >>= 1;                      /* next bit */
+        os << (char)('0' + (i & 1)); /* character '0' + bit */
+        i >>= 1;                     /* next bit */
     } while (--n);
 
 #ifndef NPRETTY_COLOR
-    out << NORMAL;
+    os << NORMAL;
 #endif
-    return out;
+    return os;
 }
-void debug_printBits(FILE* out, uint32_t i)
-{
-    OUT2OS();
-    debug_cppPrintBits(os, i);
-}
+
+void debug_printBits(FILE* out, uint32_t i) { debug_cppPrintBits(fos{out}, i); }
 
 /* Print all bits of the first int starting from the lower bit,
  * highlighting the differences with the second.
@@ -175,11 +162,7 @@ std::ostream& debug_cppPrintDiffBits(std::ostream& out, uint32_t i, uint32_t j)
 
     return out;
 }
-void debug_printDiffBits(FILE* out, uint32_t i, uint32_t j)
-{
-    OUT2OS();
-    debug_cppPrintDiffBits(os, i, j);
-}
+void debug_printDiffBits(FILE* out, uint32_t i, uint32_t j) { debug_cppPrintDiffBits(fos{out}, i, j); }
 
 /* Print with the format [a b c]
  */
@@ -193,11 +176,7 @@ std::ostream& debug_cppPrintVector(std::ostream& out, const int32_t* data, size_
     }
     return out << " ]";
 }
-void debug_printVector(FILE* out, const int32_t* data, size_t size)
-{
-    OUT2OS();
-    debug_cppPrintVector(os, data, size);
-}
+void debug_printVector(FILE* out, const int32_t* data, size_t size) { debug_cppPrintVector(fos{out}, data, size); }
 
 /* same as debug_printVector but for double
  */
@@ -213,8 +192,7 @@ std::ostream& debug_cppPrintRealVector(std::ostream& out, const double* data, si
 }
 void debug_printRealVector(FILE* out, const double* data, size_t size)
 {
-    OUT2OS();
-    debug_cppPrintRealVector(os, data, size);
+    debug_cppPrintRealVector(fos{out}, data, size);
 }
 
 /* To print differences
@@ -255,8 +233,7 @@ std::ostream& debug_cppPrintDiffVectors(std::ostream& out, const int32_t* vec1, 
 }
 void debug_printDiffVectors(FILE* out, const int32_t* vec1, const int32_t* vec2, size_t size)
 {
-    OUT2OS();
-    debug_cppPrintDiffVectors(os, vec1, vec2, size);
+    debug_cppPrintDiffVectors(fos{out}, vec1, vec2, size);
 }
 
 /* Go through the bits and print the index of the
@@ -286,8 +263,7 @@ std::ostream& debug_cppPrintActiveSet(std::ostream& out, const uint32_t* bits, s
  */
 void debug_printActiveSet(FILE* out, const uint32_t* bits, size_t intSize)
 {
-    OUT2OS();
-    debug_cppPrintActiveSet(os, bits, intSize);
+    debug_cppPrintActiveSet(fos{out}, bits, intSize);
 }
 
 /* Look for the end of string; then search backward for
@@ -498,11 +474,7 @@ std::ostream& debug_cppPrintMemory(std::ostream& out, size_t i)
         return out << j << stringUnits[u];
     }
 }
-void debug_printMemory(FILE* out, size_t i)
-{
-    OUT2OS();
-    debug_cppPrintMemory(os, i);
-}
+void debug_printMemory(FILE* out, size_t i) { debug_cppPrintMemory(fos{out}, i); }
 
 /* Dummy class for a dummy test: test if
  * we are writing to a dumb terminal, such

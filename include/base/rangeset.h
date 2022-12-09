@@ -129,16 +129,16 @@ namespace base
         rangeset_t(store_type&& ranges): _ranges{std::move(ranges)} {}
 
     public:
-        rangeset_t() = default;
+        constexpr rangeset_t() = default;
         const store_type& getRanges() const { return _ranges; }
 
-        rangeset_t(const T& e) { *this |= e; }
+        constexpr rangeset_t(const T& e) { *this |= e; }
 
-        rangeset_t(const T& first, const T& last) { *this |= range_type(first, last); }
+        constexpr rangeset_t(const T& first, const T& last) { *this |= range_type(first, last); }
 
-        rangeset_t(const range_type& range) { *this |= range; }
+        constexpr rangeset_t(const range_type& range) { *this |= range; }
 
-        rangeset_t(const range_type& r1, const range_type& r2)
+        constexpr rangeset_t(const range_type& r1, const range_type& r2)
         {
             *this |= r1;
             *this |= r2;

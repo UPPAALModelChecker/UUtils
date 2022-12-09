@@ -13,7 +13,7 @@
 
 #include "base/DataAllocator.h"
 
-#include "io/FileStreamBuffer.h"
+#include "io/file_ostream.hpp"
 #include "debug/macros.h"
 
 // When debugging we allocate more to
@@ -157,13 +157,12 @@ namespace base
     {
         assert(memPool);
 
-        Pool_t* pool = memPool->next;
         memPool->next = nullptr;
         freePtr = memPool->mem;
         endFree = memPool->end;
 
-        while (pool) {
-            Pool_t* next = pool->next;
+        for (auto* pool = memPool->next; pool != nullptr;) {
+            auto* next = pool->next;
             delete pool;
             pool = next;
         }
@@ -172,49 +171,37 @@ namespace base
         freeMem.reset();
     }
 
-    /** Print statistics, C style = wrapper to C++.
-     */
-    void DataAllocator::printStats(FILE* out) const
-    {
-        io::FileStreamBuffer fsb(out);
-        std::ostream os(&fsb);
-        printStats(os);
-    }
+    using fos = io::file_ostream;
 
-    /** Utility function to print stats
-     */
+    /** Print statistics, C style = wrapper to C++. */
+    void DataAllocator::printStats(FILE* out) const { printStats(fos{out}); }
+
+    /** Utility function to print stats */
     static void DataAllocator_printMem(std::ostream& out, const char* caption, uint32_t mem)
     {
         out << caption << ": " << mem << 'B';
-        if (mem > 1024) {
+        if (mem > 1024)
             debug_cppPrintMemory(out << "\t= ", mem);
-        }
         out << "\n";
     }
 
-    /** Print statistics.
-     */
+    /** Print statistics. */
     std::ostream& DataAllocator::printStats(std::ostream& out) const
     {
         // compute pool stats
         uint32_t nbPools = 0;
-        const Pool_t* pool = memPool;
-        while (pool) {
-            nbPools++;
-            pool = pool->next;
-        }
+        for (const Pool_t* pool = memPool; pool != nullptr; pool = pool->next)
+            ++nbPools;
 
         // compute free list stats
         uint32_t memInFreeList = 0;
         array_t<uint32_t> freeListStats;
         uint32_t n = freeMem.size();
         for (uint32_t i = 0; i < n; ++i) {
-            uintptr_t* freeList = freeMem[i];
-            while (freeList) {
+            for (uintptr_t* freeList = freeMem[i]; freeList != nullptr; freeList = getNext(*freeList)) {
                 // size i at index i
                 freeListStats.add(i, i);
                 memInFreeList += i;
-                freeList = getNext(*freeList);
             }
         }
 
@@ -229,11 +216,9 @@ namespace base
         DataAllocator_printMem(out, "Deallocated available    ", memInFreeList * sizeof(uint32_t));
         out << "Details of deallocated memory:";
         n = freeListStats.size();
-        for (uint32_t i = 0; i < n; ++i) {
-            if (freeListStats[i]) {
+        for (uint32_t i = 0; i < n; ++i)
+            if (freeListStats[i])
                 debug_cppPrintMemory(out << " [" << i << "]=", freeListStats[i] * sizeof(uint32_t));
-            }
-        }
         return out << "\n";
     }
 
@@ -245,26 +230,22 @@ namespace base
         assert(memPool);
 
         // current pool: check against freePtr
-        if (data >= memPool->mem && data < freePtr) {
+        if (data >= memPool->mem && data < freePtr)
             inPool = true;
-        }
 
         // list of full pools
-        for (const Pool_t* pool = memPool->next; !inPool && pool != nullptr; pool = pool->next) {
-            if (data >= pool->mem && data < pool->end) {
+        for (const Pool_t* pool = memPool->next; !inPool && pool != nullptr; pool = pool->next)
+            if (data >= pool->mem && data < pool->end)
                 inPool = true;
-            }
-        }
 
         // not allocated in the pools
         if (!inPool)
             return false;
 
         // may be allocated in the pools but on the free list => not in the pools
-        for (uintptr_t* fdata = freeMem.get(intSize); fdata != nullptr; fdata = getNext(*fdata)) {
+        for (uintptr_t* fdata = freeMem.get(intSize); fdata != nullptr; fdata = getNext(*fdata))
             if (data == fdata)
                 return false;
-        }
 
         return true;
     }
