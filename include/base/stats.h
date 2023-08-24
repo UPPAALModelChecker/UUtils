@@ -21,38 +21,37 @@
 
 #include "hash/tables.h"
 
-namespace base
+namespace base {
+class Stats
 {
-    class Stats
+public:
+    Stats() {}
+    ~Stats();
+
+    void count(const char* statName, const char* subStat = NULL);
+
+    struct stat_t
     {
-    public:
-        Stats() {}
-        ~Stats();
+        stat_t(const char* statName, stat_t* nxt): name(statName), counter(1), next(nxt) {}
+        ~stat_t() { delete next; }
 
-        void count(const char* statName, const char* subStat = NULL);
-
-        struct stat_t
-        {
-            stat_t(const char* statName, stat_t* nxt): name(statName), counter(1), next(nxt) {}
-            ~stat_t() { delete next; }
-
-            const char* name;
-            int64_t counter;
-            stat_t* next;
-        };
-
-        struct entry_t : public uhash::TableSingle<entry_t>::Bucket_t
-        {
-            entry_t(const char* name, stat_t* next = NULL): stat(name, next) {}
-
-            stat_t stat;  // Main stat, with list of sub-stats.
-        };
-
-    private:
-        uhash::TableSingle<entry_t> table;
+        const char* name;
+        int64_t counter;
+        stat_t* next;
     };
 
-    extern Stats stats;
+    struct entry_t : public uhash::TableSingle<entry_t>::Bucket_t
+    {
+        entry_t(const char* name, stat_t* next = NULL): stat(name, next) {}
+
+        stat_t stat;  // Main stat, with list of sub-stats.
+    };
+
+private:
+    uhash::TableSingle<entry_t> table;
+};
+
+extern Stats stats;
 }  // namespace base
 
 // Typical way of using stats:

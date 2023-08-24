@@ -55,115 +55,113 @@ void base_delete(void* mem, size_t unused1, void* unused2);
  */
 extern allocator_t base_newallocator;
 
-namespace base
+namespace base {
+/** Fast chunk allocator.
+ * Has the ability to deallocate all data at once.
+ */
+class DataAllocator;
+typedef std::shared_ptr<DataAllocator> DataAllocator_ptr;
+
+class DataAllocator final : public std::enable_shared_from_this<DataAllocator>
 {
-    /** Fast chunk allocator.
-     * Has the ability to deallocate all data at once.
+public:
+    DataAllocator();
+    virtual ~DataAllocator() noexcept;
+
+    /** Allocate memory.
+     * @param intSize: size in int units
+     * @return a int32[intSize] allocated
+     * memory area.
+     * If ALIGN_WORD64 is defined then the result is aligned
+     * on 64 bits. It is the responsability of the developper
+     * to use the flag. It is possible to skip the flag on
+     * Intel architecture that can cope with non aligned
+     * addresses.
+     * @pre intSize <= CHUNK_SIZE
      */
-    class DataAllocator;
-    typedef std::shared_ptr<DataAllocator> DataAllocator_ptr;
+    void* allocate(size_t intSize);
 
-    class DataAllocator final : public std::enable_shared_from_this<DataAllocator>
+    /** Deallocate memory.
+     * @pre
+     * - memory was allocated with allocate
+     * - size allocated was intSize
+     * @param data: memory to deallocate
+     * @param intSize: size in int units of the
+     * allocated memory.
+     */
+    void deallocate(void* data, size_t intSize);
+
+    /** Reset the allocator: deallocate all
+     * memory allocated by this allocator!
+     */
+    void reset();
+
+    /** Print statistics, C style.
+     * @param out: where to print.
+     */
+    void printStats(FILE* out) const;
+
+    /** Print statistics, C++ style.
+     * @param out: where to print.
+     * @return the ostream.
+     */
+    std::ostream& printStats(std::ostream& out) const;
+
+    /** C wrapper allocator
+     * @return C wrapper allocator_t
+     */
+    allocator_t getCAllocator()
     {
-    public:
-        DataAllocator();
-        virtual ~DataAllocator() noexcept;
+        allocator_t c_alloc = {.allocData = this, .allocFunction = base_allocate, .deallocFunction = base_deallocate};
+        return c_alloc;
+    }
 
-        /** Allocate memory.
-         * @param intSize: size in int units
-         * @return a int32[intSize] allocated
-         * memory area.
-         * If ALIGN_WORD64 is defined then the result is aligned
-         * on 64 bits. It is the responsability of the developper
-         * to use the flag. It is possible to skip the flag on
-         * Intel architecture that can cope with non aligned
-         * addresses.
-         * @pre intSize <= CHUNK_SIZE
-         */
-        void* allocate(size_t intSize);
+private:
+    /** Memory is allocated internally by
+     * chunks. This controls the size of
+     * these chunks.
+     */
+    enum { CHUNK_SIZE = (1 << 22) };
 
-        /** Deallocate memory.
-         * @pre
-         * - memory was allocated with allocate
-         * - size allocated was intSize
-         * @param data: memory to deallocate
-         * @param intSize: size in int units of the
-         * allocated memory.
-         */
-        void deallocate(void* data, size_t intSize);
+    /** Table of free memory lists.
+     * freeMem[i] starts a list of free
+     * memory blocks of i INT size
+     */
+    array_t<uintptr_t*> freeMem;
 
-        /** Reset the allocator: deallocate all
-         * memory allocated by this allocator!
-         */
-        void reset();
+    /** An entry in the freeMem table
+     * at i gives a free memory block
+     * of size i ints. If there are other
+     * such blocks, then this memory block
+     * contains the pointer to the next
+     * free block.
+     * This function is a convenience cast
+     * for this case.
+     */
+    static inline uintptr_t* getNext(uintptr_t data) { return (uintptr_t*)data; }
+    static inline uintptr_t getNext(uintptr_t* data) { return (uintptr_t)data; }
 
-        /** Print statistics, C style.
-         * @param out: where to print.
-         */
-        void printStats(FILE* out) const;
+    /** Check that a given address belongs to a pool or the free list.
+     * Used for debugging, this is not a performance critical method.
+     * @param data: memory to check,
+     * @param intSize: size of the memory to check.
+     * @return true if the memory belongs to a pool.
+     */
+    bool hasInPools(const uintptr_t* data, size_t intSize) const;
 
-        /** Print statistics, C++ style.
-         * @param out: where to print.
-         * @return the ostream.
-         */
-        std::ostream& printStats(std::ostream& out) const;
-
-        /** C wrapper allocator
-         * @return C wrapper allocator_t
-         */
-        allocator_t getCAllocator()
-        {
-            allocator_t c_alloc = {
-                .allocData = this, .allocFunction = base_allocate, .deallocFunction = base_deallocate};
-            return c_alloc;
-        }
-
-    private:
-        /** Memory is allocated internally by
-         * chunks. This controls the size of
-         * these chunks.
-         */
-        enum { CHUNK_SIZE = (1 << 22) };
-
-        /** Table of free memory lists.
-         * freeMem[i] starts a list of free
-         * memory blocks of i INT size
-         */
-        array_t<uintptr_t*> freeMem;
-
-        /** An entry in the freeMem table
-         * at i gives a free memory block
-         * of size i ints. If there are other
-         * such blocks, then this memory block
-         * contains the pointer to the next
-         * free block.
-         * This function is a convenience cast
-         * for this case.
-         */
-        static inline uintptr_t* getNext(uintptr_t data) { return (uintptr_t*)data; }
-        static inline uintptr_t getNext(uintptr_t* data) { return (uintptr_t)data; }
-
-        /** Check that a given address belongs to a pool or the free list.
-         * Used for debugging, this is not a performance critical method.
-         * @param data: memory to check,
-         * @param intSize: size of the memory to check.
-         * @return true if the memory belongs to a pool.
-         */
-        bool hasInPools(const uintptr_t* data, size_t intSize) const;
-
-        /** Memory pool.
-         */
-        struct Pool_t
-        {
-            Pool_t* next;
-            uintptr_t mem[CHUNK_SIZE];
-            uintptr_t end[]; /**< only to mark the end, no data */
-        };
-
-        Pool_t* memPool;    /**< current pool in use       */
-        uintptr_t* freePtr; /**< current free mem position */
-        uintptr_t* endFree; /**< end of current chunk      */
+    /** Memory pool.
+     */
+    struct Pool_t
+    {
+        Pool_t* next;
+        uintptr_t mem[CHUNK_SIZE];
+        uintptr_t end[]; /**< only to mark the end, no data */
     };
+
+    Pool_t* memPool;    /**< current pool in use       */
+    uintptr_t* freePtr; /**< current free mem position */
+    uintptr_t* endFree; /**< end of current chunk      */
+};
 
 }  // namespace base
 

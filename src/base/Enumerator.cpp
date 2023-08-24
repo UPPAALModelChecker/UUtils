@@ -13,32 +13,31 @@
 
 #include "base/Enumerator.h"
 
-namespace base
+namespace base {
+// return NULL when no bucket left
+SingleLinkable_t* LinkableEnumerator::getNextLinkable()
 {
-    // return NULL when no bucket left
-    SingleLinkable_t* LinkableEnumerator::getNextLinkable()
+    SingleLinkable_t* item = current;
+    if (item)  // got a bucket, prepare for next
     {
-        SingleLinkable_t* item = current;
-        if (item)  // got a bucket, prepare for next
-        {
-            current = current->next;
-        } else if (size) {
-            // find 1st non null
-            do {
-                table++;
-            } while (--size && !*table);
+        current = current->next;
+    } else if (size) {
+        // find 1st non null
+        do {
+            table++;
+        } while (--size && !*table);
 
-            // if valid
-            if (size) {
-                // while stop condition: nEntries == 0 || *table != NULL
-                // if nEntries == 0, we are not here, item stays NULL
-                // else *table not NULL and valid.
-                assert(*table);
+        // if valid
+        if (size) {
+            // while stop condition: nEntries == 0 || *table != NULL
+            // if nEntries == 0, we are not here, item stays NULL
+            // else *table not NULL and valid.
+            assert(*table);
 
-                item = *table;
-                current = item->next;
-            }
+            item = *table;
+            current = item->next;
         }
-        return item;
     }
+    return item;
+}
 }  // namespace base
