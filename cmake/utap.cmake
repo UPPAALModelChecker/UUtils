@@ -1,10 +1,9 @@
 find_package(UTAP 1.1.6 QUIET)
 
-if (utap_FOUND)
-    message(STATUS "Found UTAP.")
-else(utap_FOUND)
-    message(STATUS "Failed to find UTAP, will try fetching and compiling from source.")
-    include(FetchContent)
+if (UTAP_FOUND)
+    message(STATUS "Found UTAP: ${UTAP_DIR}")
+else(UTAP_FOUND)
+    message(STATUS "Failed to find UTAP, going to compile from source.")
     FetchContent_Declare(
             UTAP
             GIT_REPOSITORY https://github.com/UPPAALModelChecker/utap.git
@@ -16,11 +15,12 @@ else(utap_FOUND)
             USES_TERMINAL_CONFIGURE ON
             USES_TERMINAL_BUILD ON
             USES_TERMINAL_INSTALL ON
-            LOG_DOWNLOAD ON
-            LOG_CONFIGURE ON
-            LOG_BUILD ON
-            LOG_INSTALL ON
-            LOG_OUTPUT_ON_FAILURE ON
     )
     FetchContent_MakeAvailable(UTAP)
-endif(utap_FOUND)
+    if (UTAP_SOURCE_DIR)
+        set(UTAP_FOUND TRUE)
+        message(STATUS "Got UTAP: ${UTAP_SOURCE_DIR}")
+    else (UTAP_SOURCE_DIR)
+        message(FATAL_ERROR "Failed to fetch UTAP")
+    endif (UTAP_SOURCE_DIR)
+endif(UTAP_FOUND)

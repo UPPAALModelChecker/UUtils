@@ -14,14 +14,14 @@
  *
  **********************************************************************/
 
-#include "io/file_stream.hpp"
+#include "base/file_stream.hpp"
 #include "base/bitstring.h"
 #include "debug/macros.h"
 
 #include <cstdlib>
 #include <cstring>
 
-using fos = io::file_ostream;  /// C FILE to std::ostream adapter
+using fos = base::file_ostream;  /// C FILE to std::ostream adapter
 
 /// Straightforward randomization of memory.
 void debug_randomize(void* data, size_t intsize)

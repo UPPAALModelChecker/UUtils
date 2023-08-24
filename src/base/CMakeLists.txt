@@ -1,11 +1,10 @@
 file(GLOB base_source "*.c" "*.cpp")
 add_library(base ${base_source})
-target_include_directories(base PRIVATE "${Boost_INCLUDE_DIRS}")
-
+#target_include_directories(base PRIVATE "${Boost_INCLUDE_DIRS}")
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
-    target_link_libraries(base PRIVATE udebug iphlpapi psapi PUBLIC hash)
+    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash::xxhash Boost::math Boost::headers iphlpapi psapi)
 else()
-    target_link_libraries(base PRIVATE udebug PUBLIC hash)
+    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash::xxhash Boost::math Boost::headers)
 endif()
 
 target_include_directories(base

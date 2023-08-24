@@ -1,33 +1,43 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.24)
+cmake_policy(SET CMP0048 NEW) # project() command manages VERSION variables
 project(UUtils VERSION 1.2.0 HOMEPAGE_URL "https://github.com/UPPAALModelChecker/UUtils" LANGUAGES CXX C)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
+include(FetchContent)
+# set(FETCHCONTENT_QUIET FALSE) # for debugging FetchContent
+
+option(UUtils_WITH_TESTS "Enable UUtils unit tests" ON)
+option(UUtils_WITH_BENCHMARKS "Enable UUtils benchmarks (depends on tests)" OFF)
+
+#set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 
 include(cmake/stdcpp.cmake)
+if(UUtils_WITH_TESTS)
+  include(cmake/doctest.cmake)
+endif (UUtils_WITH_TESTS)
+if (UUtils_WITH_BENCHMARKS)
+  include(cmake/benchmark.cmake)
+endif (UUtils_WITH_BENCHMARKS)
+include(cmake/xxhash.cmake)
+set(BOOST_INCLUDE_LIBRARIES math)
+include(cmake/boost.cmake)
 
-option(UUtils_WITH_TESTS OFF)
-
-cmake_policy(SET CMP0048 NEW) # project() command manages VERSION variables
-
-set(MODULES base debug hash io)
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/libs)
-
-set(Boost_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libs/boost")
-find_package(Boost 1.74 REQUIRED)
-find_package(xxHash 0.8.0 REQUIRED COMPONENTS xxhash)
-# include(cmake/utap.cmake)
-
-message(STATUS "Boost include: ${Boost_INCLUDE_DIRS}")
+if(UUtils_WITH_TESTS)
+  enable_testing()
+endif (UUtils_WITH_TESTS)
 
 include_directories("include")
 
+set(MODULES base debug hash)
 foreach(MODULE ${MODULES})
   add_subdirectory("src/${MODULE}")
-  if(UUtils_WITH_TESTS)
-      enable_testing()
-      add_subdirectory("test/${MODULE}")
-  endif(UUtils_WITH_TESTS)
 endforeach()
+
+if(UUtils_WITH_TESTS)
+  foreach(MODULE ${MODULES})
+    add_subdirectory("test/${MODULE}")
+  endforeach()
+endif(UUtils_WITH_TESTS)
 
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/UUtilsConfigVersion.cmake VERSION ${PACKAGE_VERSION} COMPATIBILITY SameMajorVersion)
 

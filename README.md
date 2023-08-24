@@ -2,11 +2,17 @@
 Library for miscellaneous utilities used in [UDBM](https://github.com/UPPAALModelChecker/UDBM), [UCDD](https://github.com/UPPAALModelChecker/UCDD) and others.
 
 ## Dependencies
-This repository depends on `cmake gcc xxHash doctest boost`.
-## Build on Linux
-To build, test, and install the project, run the following commands:
-```sh
+This repository depends on `cmake gcc g++ xxHash doctest benchmark boost`.
+## Build, Test and Install
+```shell
 git clone https://github.com/UPPAALModelChecker/UUtils
+cmake -B build -S UUtils -DCMAKE_BUILD_TYPE=Release -DUUtils_WITH_TESTS=ON -DUUtils_WITH_BENCHMARK=ON
+cmake --build build
+(cd build ; ctest)
+sudo cmake --install build
+```
+
+```shell
 cd UUtils
 ./getlibs.sh all
 cmake -S . -B build -DTESTING=yes
@@ -15,7 +21,7 @@ cmake --build build
 sudo cmake --install build
 ```
 
-## Build on Linux for Windows (cross-compile)
+## Cross-Compile for Windows on Linux
 ```sh
 git clone https://github.com/UPPAALModelChecker/UUtils
 cd UUtils

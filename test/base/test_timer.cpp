@@ -11,16 +11,10 @@
 ///////////////////////////////////////////////////////////////////
 
 #include "base/Timer.h"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>
 #include <iostream>
 #include <random>
 #include <thread>
-
-#include <doctest/doctest.h>
-
-using namespace std;
-using namespace base;
 
 static int64_t compute(int64_t size)
 {
@@ -38,26 +32,26 @@ TEST_CASE("compare timers after computation")
 {
     int64_t n = 100;
     double total_time = 0;
-    Timer t0;
+    base::Timer t0;
     int64_t results = 0;
     for (int i = 0; i < n; ++i) {
-        Timer t1, t2;
+        base::Timer t1, t2;
         results += compute(i);
         double elapsed = t2.getElapsed();
         total_time += elapsed;
         CHECK(t1.getElapsed() >= elapsed);
-        // cout << "Test: " << t1 << " >= " << elapsed << "s\n";
+        // std::cout << "Test: " << t1 << " >= " << elapsed << "s\n";
     }
     CHECK(t0.getElapsed() >= total_time);
     CHECK(results > 0);
     CHECK(results < n * (n - 1) / 2 * 1'000'000);  // just to avoid optimization
-    //    cout << "Passed in " << t1 << " >= " << total << "s\n";
+    //    std::cout << "Passed in " << t1 << " >= " << total << "s\n";
 }
 
 TEST_CASE("simplest time measurement (fails if nanoseconds are not initialized")
 {
     using namespace std::chrono_literals;
-    auto t = Timer{true};
+    auto t = base::Timer{true};
     std::this_thread::sleep_for(67ms);
     auto delay = t.getElapsed();
     CHECK(delay >= 0.067);
@@ -67,7 +61,7 @@ TEST_CASE("simplest time measurement (fails if nanoseconds are not initialized")
 TEST_CASE("measure time with default start")
 {
     using namespace std::chrono_literals;
-    auto t = Timer{true};
+    auto t = base::Timer{true};
     std::this_thread::sleep_for(67ms);
     auto delay = t.getElapsed();
     CHECK(delay >= 0.067);
@@ -84,7 +78,7 @@ TEST_CASE("measure time with default start")
 TEST_CASE("measure time with default pause")
 {
     using namespace std::chrono_literals;
-    auto t = Timer{false};
+    auto t = base::Timer{false};
     t.start();
     std::this_thread::sleep_for(67ms);
     t.pause();
