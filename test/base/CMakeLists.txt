@@ -56,6 +56,7 @@ target_link_libraries(test_random_seed PRIVATE base doctest::doctest_with_main)
 add_test(NAME base_random_seed COMMAND test_random_seed)
 
 add_executable(test_randomness test_randomness.cpp)
+target_compile_definitions(test_randomness PUBLIC _USE_MATH_DEFINES) # M_PI
 target_link_libraries(test_randomness PRIVATE base Boost::math)
 
 add_executable(test_sequencefilter test_sequencefilter.cpp)

@@ -1,5 +1,5 @@
 file(GLOB hash_source "*.c" "*.cpp" "*.h")
-add_library(hash ${hash_source})
+add_library(hash STATIC ${hash_source})
 target_link_libraries(hash PRIVATE xxHash::xxhash)
 
 

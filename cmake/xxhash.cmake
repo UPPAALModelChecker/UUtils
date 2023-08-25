@@ -4,10 +4,10 @@ if (xxHash_FOUND)
     message(STATUS "Found xxHash: ${xxHash_DIR}")
 else(xxHash_FOUND)
     message(STATUS "Failed to find xxHash, going to compile from source.")
-    # set(XXHASH_BUILD_ENABLE_INLINE_API ON CACHE BOOL "adds xxhash.c for the -DXXH_INLINE_ALL api. ON by default")
-    # set(XXHASH_BUILD_XXHSUM ON CACHE BOOL "build the command line binary. ON by default")
-    # set(BUILD_SHARED_LIBS OFF CACHE BOOL "build dynamic library. ON by default")
-    # set(DISPATCH OFF CACHE BOOL "enable dispatch mode. OFF by default")
+    set(XXHASH_BUILD_ENABLE_INLINE_API ON CACHE BOOL "adds xxhash.c for the -DXXH_INLINE_ALL api. Default ON")
+    set(XXHASH_BUILD_XXHSUM OFF CACHE BOOL "build the command line binary. Default ON")
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "build dynamic library. Default ON")
+    # set(DISPATCH OFF CACHE BOOL "enable dispatch mode. Default OFF")
     FetchContent_Declare(
             xxHash
             GIT_REPOSITORY https://github.com/Cyan4973/xxHash
