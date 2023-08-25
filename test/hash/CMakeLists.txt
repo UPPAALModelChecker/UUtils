@@ -1,11 +1,11 @@
 if (UUtils_WITH_BENCHMARKS)
   find_package(benchmark REQUIRED)
   add_executable(bm_compute bm_compute.cpp)
-  target_link_libraries(bm_compute PRIVATE hash xxHash::xxhash benchmark::benchmark_main)
+  target_link_libraries(bm_compute PRIVATE hash xxHash benchmark::benchmark_main)
 endif (UUtils_WITH_BENCHMARKS)
 
 add_executable(test_compute test_compute.cpp)
-target_link_libraries(test_compute PRIVATE xxHash::xxhash doctest::doctest) # hash base udebug
+target_link_libraries(test_compute PRIVATE xxHash doctest::doctest) # hash base udebug
 add_test(NAME hash_compute COMMAND test_compute)
 
 add_executable(test_tables test_tables.cpp)

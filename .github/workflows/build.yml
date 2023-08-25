@@ -10,27 +10,32 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Format
       run: find src include test -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
   build-linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - name: Build without Dependencies
+      run: |
+          cmake -S . -B build-wd-debug -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build-wd-debug --config Debug
+          (cd build-wd-debug && ctest --output-on-failure)
     - name: Get dependencies
       run: |
-          sudo apt-get update
-          sudo apt-get install libboost-all-dev doctest-dev
+          sudo apt-get -y update
+          sudo apt-get -y install libboost-math-dev libxxhash-dev doctest-dev
           ./getlibs.sh
     - name: Build and test
       run: |
-          cmake -S . -B build -DTESTING=yes
-          cmake --build build
-          (cd build && ctest --output-on-failure)
+          cmake -S . -B build-debug -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build-debug --config Debug
+          (cd build-debug && ctest --output-on-failure)
   build-win:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Get dependencies
       run: |
           sudo apt-get update
@@ -46,7 +51,7 @@ jobs:
   build-macos:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Get dependencies
       run: |
           brew install boost doctest

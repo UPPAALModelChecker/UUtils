@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0048 NEW) # project() command manages VERSION variables
 project(UUtils VERSION 1.2.0 HOMEPAGE_URL "https://github.com/UPPAALModelChecker/UUtils" LANGUAGES CXX C)
 include(CMakePackageConfigHelpers)

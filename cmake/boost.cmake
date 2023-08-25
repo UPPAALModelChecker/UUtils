@@ -23,13 +23,13 @@ else(Boost_FOUND)
     FetchContent_Declare(
             Boost
             DOWNLOAD_EXTRACT_TIMESTAMP ON
-            URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
-            URL_HASH SHA256=c5a0688e1f0c05f354bbd0b32244d36085d9ffc9f932e8a18983a9908096f614
             FIND_PACKAGE_ARGS NAMES Boost COMPONENTS ${BOOST_INCLUDE_LIBRARIES}
             USES_TERMINAL_DOWNLOAD TRUE # show progress in ninja generator
             USES_TERMINAL_CONFIGURE ON
             USES_TERMINAL_BUILD ON
             USES_TERMINAL_INSTALL ON
+            URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
+            URL_HASH SHA256=c5a0688e1f0c05f354bbd0b32244d36085d9ffc9f932e8a18983a9908096f614	    
     )
     FetchContent_MakeAvailable(Boost) # Fetches, builds and creates boost_{SOURCE_DIR,BINARY_DIR}
 

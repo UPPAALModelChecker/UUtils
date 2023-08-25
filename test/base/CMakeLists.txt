@@ -10,13 +10,12 @@ if (UUtils_WITH_BENCHMARKS)
 endif (UUtils_WITH_BENCHMARKS)
 
 add_executable(test_allocator test_allocator.cpp)
-target_link_libraries(test_allocator PRIVATE base xxHash::xxhash)
+target_link_libraries(test_allocator PRIVATE base xxHash)
 add_test(NAME base_allocator_10000 COMMAND test_allocator 10000)
 add_test(NAME base_allocator_30000 COMMAND test_allocator 30000)
 
 add_executable(test_array test_array.cpp)
-target_link_libraries(test_array PRIVATE xxHash::xxhash)
-# target_link_libraries(test_array PRIVATE base udebug)
+target_link_libraries(test_array PRIVATE xxHash)
 add_test(NAME base_array_10_0 COMMAND test_array 10 0)
 add_test(NAME base_array_10_1 COMMAND test_array 10 1)
 add_test(NAME base_array_10_2 COMMAND test_array 10 2)
@@ -27,7 +26,7 @@ target_link_libraries(test_bit_string PRIVATE base udebug)
 add_test(NAME base_bit_string COMMAND test_bit_string)
 
 add_executable(test_crash_allocator test_crash_allocator.cpp)
-target_link_libraries(test_crash_allocator PRIVATE base xxHash::xxhash)
+target_link_libraries(test_crash_allocator PRIVATE base xxHash)
 add_test(NAME base_crash_allocator_0 COMMAND test_crash_allocator 0)
 add_test(NAME base_crash_allocator_1 COMMAND test_crash_allocator 1)
 add_test(NAME base_crash_allocator_2 COMMAND test_crash_allocator 2)
@@ -49,10 +48,10 @@ add_executable(test_meta test_meta.cpp)
 add_test(NAME base_meta COMMAND test_meta)
 
 add_executable(test_random test_random.cpp)
-target_link_libraries(test_random PRIVATE base doctest::doctest_with_main)
+target_link_libraries(test_random PRIVATE base doctest_with_main)
 
 add_executable(test_random_seed test_random_seed.cpp)
-target_link_libraries(test_random_seed PRIVATE base doctest::doctest_with_main)
+target_link_libraries(test_random_seed PRIVATE base doctest_with_main)
 add_test(NAME base_random_seed COMMAND test_random_seed)
 
 add_executable(test_randomness test_randomness.cpp)
@@ -60,16 +59,18 @@ target_compile_definitions(test_randomness PUBLIC _USE_MATH_DEFINES) # M_PI
 target_link_libraries(test_randomness PRIVATE base Boost::math)
 
 add_executable(test_sequencefilter test_sequencefilter.cpp)
-target_link_libraries(test_sequencefilter PRIVATE doctest::doctest_with_main)
+target_link_libraries(test_sequencefilter PRIVATE doctest_with_main)
 add_test(NAME test_sequencefilter COMMAND test_sequencefilter)
 
 add_executable(test_time test_time.cpp)
 add_test(NAME base_time COMMAND test_time)
+set_tests_properties(base_time PROPERTIES DISABLED TRUE) # takes too much time
 
 add_executable(test_timer test_timer.cpp)
-target_link_libraries(test_timer PRIVATE base doctest::doctest_with_main)
-# This tests is disabled as it will fail random on macos or cross compile, sometime also on slower targets
+target_link_libraries(test_timer PRIVATE base doctest_with_main)
 add_test(NAME base_timer_100 COMMAND test_timer)
+set_tests_properties(base_timer_100 PROPERTIES DISABLED TRUE) # randomly fail on slow hosts
+
 
 # these tests fail intentionally, but via assertion, and ctest treats them as crash on Linux
 set_tests_properties(

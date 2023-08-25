@@ -1,7 +1,14 @@
 find_package(doctest 2.4.8 QUIET)
 
 if (doctest_FOUND)
-    message(STATUS "Found doctest: ${doctest_DIR}")
+  if (TARGET doctest::doctest_with_main)
+    add_library(doctest_with_main INTERFACE)
+    target_link_libraries(doctest_with_main PRIVATE doctest::doctest_with_main)
+  else(TARGET doctest::doctest_with_main) # workaround for old doctest
+    add_library(doctest_with_main INTERFACE)
+    target_compile_definitions(doctest_with_main INTERFACE DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
+  endif(TARGET doctest::doctest_with_main)
+  message(STATUS "Found doctest: ${doctest_DIR}")
 else(doctest_FOUND)
     message(STATUS "Failed to find doctest, going to compile from source.")
     set(DOCTEST_WITH_TESTS OFF CACHE BOOL "doctest tests and examples")
