@@ -1,7 +1,6 @@
-file(GLOB hash_source "*.c" "*.cpp" "*.h")
-add_library(hash STATIC ${hash_source})
-target_link_libraries(hash PRIVATE xxHash)
-
+add_library(hash STATIC compute.cpp PointerTable.cpp tables.cpp)
+#target_link_libraries(hash PRIVATE xxHash)
+target_include_directories(hash PRIVATE ${XXHASH_INCLUDE_DIR}) # workaround
 
 target_include_directories(hash
                            INTERFACE

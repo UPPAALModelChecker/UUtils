@@ -19,7 +19,7 @@ if (UUtils_WITH_BENCHMARKS)
   include(cmake/benchmark.cmake)
 endif (UUtils_WITH_BENCHMARKS)
 include(cmake/xxhash.cmake)
-set(BOOST_INCLUDE_LIBRARIES math)
+set(BOOST_INCLUDE_LIBRARIES headers math)
 include(cmake/boost.cmake)
 
 if(UUtils_WITH_TESTS)

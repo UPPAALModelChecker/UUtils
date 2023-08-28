@@ -4,7 +4,7 @@ endif(WIN32)
 
 if (UUtils_WITH_BENCHMARKS)
   add_executable(bm_random bm_random.cpp)
-  target_link_libraries(bm_random PRIVATE base Boost::math)
+  target_link_libraries(bm_random PRIVATE base Boost::headers)
   add_test(NAME bm_random COMMAND bm_random)
   set_tests_properties(bm_random PROPERTIES RUN_SERIAL TRUE)
 endif (UUtils_WITH_BENCHMARKS)

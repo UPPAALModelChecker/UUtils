@@ -1,10 +1,12 @@
 file(GLOB base_source "*.c" "*.cpp")
 add_library(base STATIC ${base_source})
-#target_include_directories(base PRIVATE "${Boost_INCLUDE_DIRS}")
+target_include_directories(base PRIVATE ${XXHASH_INCLUDE_DIR} ${BOOST_INCLUDE_DIRS}) # workaround exports
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
-    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash Boost::math iphlpapi psapi)
+#    target_link_libraries(base PUBLIC hash PRIVATE udebug iphlpapi psapi) # xxHash::xxhash Boost::headers
+    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash::xxhash Boost::headers iphlpapi psapi) # breaks
 else()
-    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash Boost::math)
+    target_link_libraries(base PUBLIC hash PRIVATE udebug) # xxHash::xxhash Boost::headers
+#    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash::xxhash Boost::headers) # breaks
 endif()
 
 target_include_directories(base
@@ -13,13 +15,5 @@ target_include_directories(base
                             $<INSTALL_INTERFACE:include>
                            )
 
-
-install(TARGETS base xxHash
-        boost_math boost_assert boost_concept_check boost_preprocessor boost_type_traits boost_array boost_container
-        boost_intrusive boost_move boost_numeric_conversion boost_mpl boost_range boost_optional boost_regex
-        boost_tuple boost_utility boost_io boost_container_hash boost_describe boost_mp11 boost_conversion
-        boost_smart_ptr boost_typeof boost_detail boost_iterator boost_function_types boost_fusion boost_functional
-        boost_function boost_bind boost_config boost_core boost_integer boost_lexical_cast boost_predef boost_random
-        boost_dynamic_bitset boost_system boost_variant2 boost_winapi boost_static_assert boost_throw_exception
-        EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT base)
+install(TARGETS base EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT base)
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../include/base DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT base)
