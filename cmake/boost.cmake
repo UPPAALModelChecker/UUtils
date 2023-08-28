@@ -24,7 +24,7 @@ else(Boost_FOUND)
     Boost
     FIND_PACKAGE_ARGS NAMES Boost COMPONENTS ${BOOST_INCLUDE_LIBRARIES}    
     DOWNLOAD_EXTRACT_TIMESTAMP ON	    
-    URL https://people.cs.aau.dk/~marius/mirrors/boost/boost-1.83.0.tar.xz
+    URL https://homes.cs.aau.dk/~marius/mirrors/boost/boost-1.83.0.tar.xz
     # URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
     URL_HASH SHA256=c5a0688e1f0c05f354bbd0b32244d36085d9ffc9f932e8a18983a9908096f614
     USES_TERMINAL_DOWNLOAD TRUE # show progress in ninja generator
