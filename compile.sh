@@ -22,6 +22,9 @@ for target in "$@" ; do
             BUILD_TARGET=win64
             CMAKE_TOOLCHAIN_FILE="$PROJECT_DIR/toolchains/mingw.cmake"
             BUILD_TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+	    if [ -z "$WINEPATH" ]; then
+		export WINEPATH=$("$PROJECT_DIR/mingw-winepath.sh")
+	    fi
             ;;
         *)
             echo "Failed to recognize target platform: $target"

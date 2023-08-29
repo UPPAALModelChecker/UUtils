@@ -7,3 +7,4 @@ libs-win64
 libs-macos64
 cmake-build-*
 .idea
+*~
