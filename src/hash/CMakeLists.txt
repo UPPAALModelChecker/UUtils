@@ -1,6 +1,7 @@
 add_library(hash STATIC compute.cpp PointerTable.cpp tables.cpp)
 #target_link_libraries(hash PRIVATE xxHash)
-target_include_directories(hash PRIVATE ${XXHASH_INCLUDE_DIR}) # workaround
+target_compile_definitions(hash PRIVATE XXHASH_INLINE_ALL)
+target_include_directories(hash PRIVATE ${XXHASH_INCLUDE_DIR}) # workaround for xxHash::xxhash
 
 target_include_directories(hash
                            INTERFACE

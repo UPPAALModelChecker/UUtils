@@ -22,11 +22,15 @@ else(Boost_FOUND)
   set(BOOST_ENABLE_CMAKE ON)
   FetchContent_Declare(
     Boost
-    FIND_PACKAGE_ARGS NAMES Boost COMPONENTS ${BOOST_INCLUDE_LIBRARIES}    
-    DOWNLOAD_EXTRACT_TIMESTAMP ON	    
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
     URL https://homes.cs.aau.dk/~marius/mirrors/boost/boost-1.83.0.tar.xz
     # URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
     URL_HASH SHA256=c5a0688e1f0c05f354bbd0b32244d36085d9ffc9f932e8a18983a9908096f614
+    # GIT_REPOSITORY https://github.com/boostorg/boost.git
+    # GIT_TAG boost-${Boost_VERSION}
+    # GIT_SHALLOW TRUE # get only the last commit version
+    # GIT_PROGRESS TRUE # show progress of download
+    FIND_PACKAGE_ARGS NAMES Boost COMPONENTS ${BOOST_INCLUDE_LIBRARIES}
     USES_TERMINAL_DOWNLOAD TRUE # show progress in ninja generator
     USES_TERMINAL_CONFIGURE ON
     USES_TERMINAL_BUILD ON

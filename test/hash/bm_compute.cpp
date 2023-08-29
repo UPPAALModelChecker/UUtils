@@ -1,13 +1,12 @@
 #include "hash/compute.h"
 
-#include <algorithm>
-#include <random>
-#include <vector>
-
-#define XXH_INLINE_ALL
 #include <xxhash.h>
 
 #include <benchmark/benchmark.h>
+
+#include <algorithm>
+#include <random>
+#include <vector>
 
 /**
  * Benchmarks can be plotted using plot.py:
