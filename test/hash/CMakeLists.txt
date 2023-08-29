@@ -1,5 +1,4 @@
 if (UUtils_WITH_BENCHMARKS)
-  find_package(benchmark REQUIRED)
   add_executable(bm_compute bm_compute.cpp)
   target_link_libraries(bm_compute PRIVATE hash xxHash benchmark::benchmark_main)
 endif (UUtils_WITH_BENCHMARKS)
