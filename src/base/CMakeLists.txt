@@ -3,8 +3,8 @@ add_library(base STATIC bitstring.c c_allocator.c doubles.c platform.c DataAlloc
 target_include_directories(base PRIVATE ${XXHASH_INCLUDE_DIR} ${BOOST_INCLUDE_DIRS}) # workaround xxHash::xxhash
 target_compile_definitions(base PRIVATE XXH_INLINE_ALL)
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
-#    target_link_libraries(base PUBLIC hash PRIVATE udebug iphlpapi psapi) # xxHash::xxhash Boost::headers
-    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash::xxhash Boost::headers iphlpapi psapi) # breaks
+    target_link_libraries(base PUBLIC hash PRIVATE udebug iphlpapi psapi) # xxHash::xxhash Boost::headers
+#    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash::xxhash Boost::headers iphlpapi psapi) # breaks
 else()
     target_link_libraries(base PUBLIC hash PRIVATE udebug) # xxHash::xxhash Boost::headers
 #    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash::xxhash Boost::headers) # breaks
