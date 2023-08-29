@@ -4,17 +4,16 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release"
+if [ -z "${CMAKE_TOOLCHAIN_FILE+x}" ]; then
+    echo "Not using a custom toolchain file.";
+else
+    echo "Using toolchain file: $CMAKE_TOOLCHAIN_FILE";
+    CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE";
+fi
+
 for target in "$@" ; do
     BUILD_TARGET=$target
-
-    CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release"
-    if [ -z ${CMAKE_TOOLCHAIN_FILE+x} ]; then
-	    echo "Not using a custom toolchain";
-    else
-	    echo "Using toolchain $CMAKE_TOOLCHAIN_FILE";
-	    CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE";
-    fi
-
     SOURCE_DIR="$PROJECT_DIR/libs-sources"
     mkdir -p "$SOURCE_DIR"
     PREFIX_DIR="$PROJECT_DIR/libs-$BUILD_TARGET"
@@ -71,7 +70,7 @@ for target in "$@" ; do
     VERSION=${LIBRARY/[^-]*-/}
     SOURCE="$SOURCE_DIR/$LIBRARY"
     BUILD="$PREFIX_DIR/tmp/$LIBRARY"
-    if [ -r "$PREFIX_DIR/include/boost/math/distributions/arcsine.hpp" ] || [ "$PREFIX_DIR/include/boost-1_83/boost/math/distributions/arcsine.hpp" ] ; then
+    if [ -r "$PREFIX_DIR/include/boost/math/distributions/arcsine.hpp" ] || [ -r "$PREFIX_DIR/include/boost-1_83/boost/math/distributions/arcsine.hpp" ] ; then
         echo "$LIBRARY is already installed in $PREFIX_DIR"
     else
         echo "Building $LIBRARY in $BUILD from $SOURCE"

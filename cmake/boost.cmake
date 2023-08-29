@@ -19,6 +19,9 @@ if (Boost_FOUND)
   message(STATUS "Found Boost: ${Boost_DIR}")
 else(Boost_FOUND)
   message(STATUS "Failed to find Boost (${BOOST_INCLUDE_LIBRARIES}), going to compile from source")
+  if (FIND_FATAL)
+    message(FATAL_ERROR "Failed to find with CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
+  endif(FIND_FATAL)
   set(BOOST_ENABLE_CMAKE ON)
   FetchContent_Declare(
     Boost
