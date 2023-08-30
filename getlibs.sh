@@ -12,6 +12,8 @@ fi
 
 if [ -z "${CMAKE_BUILD_TYPE+x}" ]; then
     export CMAKE_BUILD_TYPE=Release
+elif [ "$CMAKE_BUILD_TYPE" != Release ]; then
+    echo "WARNING: building libs with CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
 fi
 
 for target in "$@" ; do

@@ -18,14 +18,13 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     env:
+      CMAKE_BUILD_TYPE: Debug
       BUILD_DIR: build-linux64-debug
       BUILD_LIBS_DIR: build-linux64-libs-debug
-      CMAKE_BUILD_TYPE: Debug
     steps:
       - uses: actions/checkout@v3
       - name: Build without getlibs
         run: |
-          echo "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
           cmake -S . -B $BUILD_DIR
           cmake --build $BUILD_DIR --config $CMAKE_BUILD_TYPE
           (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
@@ -34,30 +33,29 @@ jobs:
           CMAKE_BUILD_TYPE=Release ./getlibs.sh linux64
       - name: Build with getlibs
         run: |
-          echo "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
           cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$PWD/libs-linux64" -DFIND_FATAL=ON
           cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
           (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
   build-win:
     runs-on: ubuntu-latest
     env:
-      BUILD_DIR: build-win64-debug
-      BUILD_LIBS_DIR: build-win64-libs-debug
+      WINARCH: win64
       CMAKE_BUILD_TYPE: Debug
       CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/toolchains/mingw.cmake
+      BUILD_DIR: build-win64-debug
+      BUILD_LIBS_DIR: build-win64-libs-debug
     steps:
       - uses: actions/checkout@v3
       - name: Install cross-compiler
         run: |
           sudo apt-get -y update
-          sudo apt-get -y install cmake make g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools wine wine-binfmt doctest-dev libboost-all-dev
+          sudo apt-get -y install cmake make g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools wine wine-binfmt
           sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
           export WINEPATH=$(./mingw-winepath.sh)
       - name: Build without getlibs
         run: |
-          echo "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
-          echo "CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+          export WINEPATH=$("$PWD/mingw-winepath.sh")
           cmake -S . -B $BUILD_DIR
           cmake --build $BUILD_DIR --config $CMAKE_BUILD_TYPE
           (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
@@ -66,17 +64,16 @@ jobs:
           CMAKE_BUILD_TYPE=Release CMAKE_TOOLCHAIN_FILE="$PWD/toolchains/mingw.cmake" ./getlibs.sh win64
       - name: Build with getlibs
         run: |
-          echo "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
-          echo "CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+          export WINEPATH=$("$PWD/mingw-winepath.sh")
           cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$PWD/libs-win64" -DFIND_FATAL=ON
           cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
           (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
   build-macos:
     runs-on: macos-latest
     env:
+      CMAKE_BUILD_TYPE: Debug
       BUILD_DIR: build-macos64-debug
       BUILD_LIBS_DIR: build-macos64-libs-debug
-      CMAKE_BUILD_TYPE: Debug
     steps:
       - uses: actions/checkout@v3
       - name: Build without getlibs
