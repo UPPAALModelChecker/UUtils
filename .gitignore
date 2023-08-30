@@ -1,5 +1,7 @@
+*~
 build
 build-*
+!*.yml
 libs
 libs-sources
 libs-linux64
@@ -7,4 +9,3 @@ libs-win64
 libs-macos64
 cmake-build-*
 .idea
-*~
