@@ -6,10 +6,15 @@ include(GNUInstallDirs)
 include(FetchContent)
 # set(FETCHCONTENT_QUIET FALSE) # for debugging FetchContent
 
-option(UUtils_WITH_TESTS "Enable UUtils unit tests" ON)
-option(UUtils_WITH_BENCHMARKS "Enable UUtils benchmarks (depends on tests)" OFF)
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUID_TYPE Release)
+endif ()
 
-#set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+option(UUtils_WITH_TESTS "Enable UUtils unit tests" ON)
+if (UUtils_WITH_TESTS AND CMAKE_BUILD_TYPE EQUAL "Release")
+  set(UUtils_WITH_BENCHMARKS_DEFAULT ON)
+endif ()
+option(UUtils_WITH_BENCHMARKS "Enable UUtils benchmarks (depends on tests)" ${UUtils_WITH_BENCHMARKS_DEFAULT})
 
 include(cmake/stdcpp.cmake)
 if(UUtils_WITH_TESTS)

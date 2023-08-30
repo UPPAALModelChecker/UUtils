@@ -1,9 +1,24 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 set -e
+
+if [ $# -eq 0 ] ; then
+  echo "Script $0 compiles this library for a set of targets specified as arguments."
+  echo "Possible arguments:"
+  echo "  linux64-release linux64-debug linux64-libs-release linux64-libs-debug"
+  echo "  win64-release win64-debug win64-libs-release win64-libs-debug"
+  echo "  macos64-release macos64-debug macos64-libs-release macos64-libs-debug"
+  echo "linux* targets are compiled on Linux assuming cmake, ninja/make, gcc and g++ installed."
+  echo "win* targets are cross-compiled on Linux assuming cmake, ninja/make, MinGW and Wine installed."
+  echo "macos* targets are compiled on MacOS assuming cmake, ninja/make, gcc and g++ are installed."
+  echo "For targets with 'lib' in their name script will call getlibs to build the dependencies in advance."
+  echo "The script is sensitive to CMAKE_BUILD_TYPE and other environment variables"
+  exit 1
+fi
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 for target in "$@" ; do
+    echo "COMPILE for $target"
     BUILD_TYPE=""
     BUILD_TARGET=""
     BUILD_SUFFIX=""
@@ -60,4 +75,5 @@ for target in "$@" ; do
     cmake -B "$BUILD_DIR" "$BUILD_PREFIX" "$BUILD_TOOLCHAIN" -DCMAKE_BUILD_TYPE=$BUILD_TYPE $BUILD_EXTRA -S "$PROJECT_DIR"
     cmake --build "$BUILD_DIR" --config $BUILD_TYPE
     (cd "$BUILD_DIR" ; ctest -C $BUILD_TYPE --output-on-failure)
+    echo "COMPILE $target success!"
 done

@@ -4,11 +4,11 @@ if (UUtils_WITH_BENCHMARKS)
 endif (UUtils_WITH_BENCHMARKS)
 
 add_executable(test_compute test_compute.cpp)
-target_link_libraries(test_compute PRIVATE xxHash doctest::doctest) # hash base udebug
+target_link_libraries(test_compute PRIVATE xxHash doctest_with_main)
 add_test(NAME hash_compute COMMAND test_compute)
 
 add_executable(test_tables test_tables.cpp)
-target_link_libraries(test_tables PRIVATE base hash) #hash base udebug doctest::doctest
+target_link_libraries(test_tables PRIVATE base hash)
 add_test(NAME hash_tables_0 COMMAND test_tables 0)
 add_test(NAME hash_tables_1 COMMAND test_tables 1)
 add_test(NAME hash_tables_10000 COMMAND test_tables 10000)

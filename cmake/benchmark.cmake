@@ -1,12 +1,12 @@
-find_package(benchmark QUIET) # benchmarkConfigVersion has garbage version numbers
+find_package(benchmark 1.8.2 QUIET) # benchmarkConfigVersion may have garbage version numbers
 
 if (benchmark_FOUND)
   message(STATUS "Found benchmark: ${benchmark_DIR}")
 else(benchmark_FOUND)
   message(STATUS "Failed to find benchmark, going to compile from source.")
-  if (CMAKE_PREFIX_PATH)
+  if (FIND_FATAL)
     message(FATAL_ERROR "Failed to find with CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
-  endif(CMAKE_PREFIX_PATH)
+  endif(FIND_FATAL)
   set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Enable tests")
   set(BENCHMARK_ENABLE_EXCEPTIONS ON CACHE BOOL "Enable the use of exceptions in the benchmark library. Default ON")
   set(BENCHMARK_ENABLE_LTO OFF CACHE BOOL "Enable link time optimisation of the benchmark library. Default OFF")
@@ -16,7 +16,7 @@ else(benchmark_FOUND)
   FetchContent_Declare(
     benchmark
     GIT_REPOSITORY https://github.com/google/benchmark
-    GIT_TAG v1.7.1
+    GIT_TAG db3e000c1e6675f70ae41895ca1e25b274e52554
     GIT_SHALLOW TRUE # get only the last commit version
     GIT_PROGRESS TRUE # show progress of download
     # FIND_PACKAGE_ARGS NAMES benchmark
