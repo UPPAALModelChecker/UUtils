@@ -27,7 +27,7 @@ else(doctest_FOUND)
             GIT_TAG v2.4.11
             GIT_SHALLOW TRUE # get only the last commit version
             GIT_PROGRESS TRUE # show progress of download
-            FIND_PACKAGE_ARGS NAMES doctest
+            # FIND_PACKAGE_ARGS NAMES doctest
             USES_TERMINAL_DOWNLOAD TRUE # show progress in ninja generator
             USES_TERMINAL_CONFIGURE ON
             USES_TERMINAL_BUILD ON

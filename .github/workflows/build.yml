@@ -1,3 +1,4 @@
+---
 name: Build and Test
 
 on:
@@ -10,103 +11,104 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Format
-      run: find src include test -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
+      - uses: actions/checkout@v3
+      - name: Format
+        run: find src include test -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
   build-nix:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: cachix/install-nix-action@v15
-      with:
-        nix_path: nixpkgs=channel:nixos-unstable
-    - name: Build and test
-      run: nix build -L
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v15
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - name: Build and test
+        run: nix build -L
   build-nix-mac:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: cachix/install-nix-action@v15
-      with:
-        nix_path: nixpkgs=channel:nixos-unstable
-    - name: Build and test
-      run: nix build -L
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v15
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - name: Build and test
+        run: nix build -L
   build-nix-cross:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: cachix/install-nix-action@v15
-      with:
-        nix_path: nixpkgs=channel:nixos-unstable
-    - name: Build and test
-      run: nix build -L .\#packages.crossPackage.x86_64-linux
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v15
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - name: Build and test
+        run: nix build -L .\#packages.crossPackage.x86_64-linux
   build-linux:
     runs-on: ubuntu-latest
     env:
-      BUILD_DIR=build-linux64-debug
-      BUILD_LIBS_DIR=build-linux64-libs-debug
-      BUILD_TYPE=Debug
+      BUILD_DIR: build-linux64-debug
+      BUILD_LIBS_DIR: build-linux64-libs-debug
+      CMAKE_BUILD_TYPE: Debug
     steps:
-    - uses: actions/checkout@v3
-    - name: Build without getlibs
-      run: |
-          cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-          cmake --build $BUILD_DIR --config $BUILD_TYPE
-          (cd $BUILD_DIR && ctest -C $BUILD_TYPE --output-on-failure)
-    - name: Get dependencies
-      run: |
+      - uses: actions/checkout@v3
+      - name: Build without getlibs
+        run: |
+          cmake -S . -B $BUILD_DIR
+          cmake --build $BUILD_DIR --config $CMAKE_BUILD_TYPE
+          (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+      - name: Get dependencies
+        run: |
           ./getlibs.sh linux64
-    - name: Build and test with getlibs
-      run: |
-          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_PREFIX_PATH=$(pwd)/libs-linux64 -DFIND_FATAL=ON
-          cmake --build $BUILD_LIBS_DIR --config $BUILD_TYPE
-          (cd $BUILD_LIBS_DIR && ctest -C $BUILD_TYPE --output-on-failure)
+      - name: Build with getlibs
+        run: |
+          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH=$(pwd)/libs-linux64 -DFIND_FATAL=ON
+          cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
+          (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
   build-win:
     runs-on: ubuntu-latest
     env:
-      BUILD_DIR=build-win64-debug
-      BUILD_LIBS_DIR=build-win64-libs-debug
-      BUILD_TYPE=Debug
+      BUILD_DIR: build-win64-debug
+      BUILD_LIBS_DIR: build-win64-libs-debug
+      CMAKE_BUILD_TYPE: Debug
+      CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/toolchains/mingw.cmake
     steps:
-    - uses: actions/checkout@v3
-    - name: Get dependencies
-      run: |
+      - uses: actions/checkout@v3
+      - name: Install cross-compiler
+        run: |
           sudo apt-get -y update
           sudo apt-get -y install cmake make g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools wine wine-binfmt doctest-dev libboost-all-dev
           sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
-	  export WINEPATH=$(./mingw-winepath.sh)
-    - name: Build without getlibs
-      run: |
-          cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE="$(pwd)/toolchains/mingw.cmake"
-          cmake --build $BUILD_DIR --config $BUILD_TYPE
-          (cd $BUILD_DIR && ctest -C $BUILD_TYPE --output-on-failure)
-    - name: Get dependencies
-      run: |
+          export WINEPATH=$(./mingw-winepath.sh)
+      - name: Build without getlibs
+        run: |
+          cmake -S . -B $BUILD_DIR
+          cmake --build $BUILD_DIR --config $CMAKE_BUILD_TYPE
+          (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+      - name: Get dependencies
+        run: |
           CMAKE_TOOLCHAIN_FILE="$(pwd)/toolchains/mingw.cmake" ./getlibs.sh win64
-    - name: Build and test with getlibs
-      run: |
-          cmake -S . -B $BUILD_DIR -DCMAKE_TOOLCHAIN_FILE="$(pwd)/toolchains/mingw.cmake" -DCMAKE_PREFIX_PATH="$(pwd)/libs-win64" -DFIND_FATAL=ON
-          cmake --build $BUILD_DIR --config $BUILD_TYPE
-          (cd $BUILD_DIR && ctest -C $BUILD_TYPE --output-on-failure)
+      - name: Build with getlibs
+        run: |
+          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$(pwd)/libs-win64" -DFIND_FATAL=ON
+          cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
+          (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
   build-macos:
     runs-on: macos-latest
     env:
-      BUILD_DIR=build-macos64-debug
-      BUILD_LIBS_DIR=build-macos64-libs-debug
-      BUILD_TYPE=Debug
+      BUILD_DIR: build-macos64-debug
+      BUILD_LIBS_DIR: build-macos64-libs-debug
+      CMAKE_BUILD_TYPE: Debug
     steps:
-    - uses: actions/checkout@v3
-    - name: Build and test without getlibs
-      run: |
-          cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-          cmake --build $BUILD_DIR --config $BULD_TYPE
-          (cd $BUILD_DIR && ctest -C $BUILD_TYPE --output-on-failure)
-    - name: Get dependencies
-      run: |
+      - uses: actions/checkout@v3
+      - name: Build without getlibs
+        run: |
+          cmake -S . -B $BUILD_DIR
+          cmake --build $BUILD_DIR --config $CMAKE_BUILD_TYPE
+          (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+      - name: Get dependencies
+        run: |
           ./getlibs.sh macos64
-    - name: Build and test with getlibs
-      run: |
-          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_PREFIX_PATH="$(pwd)/libs-macos64" -DFIND_FATAL=ON
-          cmake --build $BUILD_LIBS_DIR --config $BULD_TYPE
-          (cd $BUILD_LIBS_DIR && ctest -C $BUILD_TYPE --output-on-failure)
+      - name: Build with getlibs
+        run: |
+          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$(pwd)/libs-macos64" -DFIND_FATAL=ON
+          cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
+          (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)

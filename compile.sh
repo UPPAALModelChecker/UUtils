@@ -57,7 +57,7 @@ for target in "$@" ; do
             BUILD_TYPE=Debug
     esac
     BUILD_DIR="build-${BUILD_TARGET}${BUILD_SUFFIX}-${BUILD_TYPE,,}"
-    cmake -B "$BUILD_DIR" "$BUILD_PREFIX" "$BUILD_TOOLCHAIN" "-DCMAKE_BUILD_TYPE=$BUILD_TYPE" $BUILD_EXTRA -S "$PROJECT_DIR"
-    cmake --build "$BUILD_DIR"
-    (cd "$BUILD_DIR" ; ctest --output-on-failure)
+    cmake -B "$BUILD_DIR" "$BUILD_PREFIX" "$BUILD_TOOLCHAIN" -DCMAKE_BUILD_TYPE=$BUILD_TYPE $BUILD_EXTRA -S "$PROJECT_DIR"
+    cmake --build "$BUILD_DIR" --config $BUILD_TYPE
+    (cd "$BUILD_DIR" ; ctest -C $BUILD_TYPE --output-on-failure)
 done
