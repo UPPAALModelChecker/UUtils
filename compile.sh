@@ -36,9 +36,9 @@ for target in "$@" ; do
             BUILD_PREFIX="-DCMAKE_PREFIX_PATH=$PROJECT_DIR/libs-$BUILD_TARGET"
             BUILD_SUFFIX="-libs"
 	    if [ -n "$CMAKE_TOOLCHAIN_FILE" ]; then
-		CMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN_FILE" "$PROJECT_DIR/getlibs.sh" "$BUILD_TARGET"
+		CMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN_FILE" CMAKE_BUILD_TYPE=Release "$PROJECT_DIR/getlibs.sh" "$BUILD_TARGET"
 	    else
-		"$PROJECT_DIR/getlibs.sh" "$BUILD_TARGET"
+		CMAKE_BUILD_TYPE=Release "$PROJECT_DIR/getlibs.sh" "$BUILD_TARGET"
 	    fi
 	    BUILD_EXTRA="-DFIND_FATAL=ON ${BUILD_EXTRA}"
             ;;

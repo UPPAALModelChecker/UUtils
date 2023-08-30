@@ -31,9 +31,10 @@ jobs:
           (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
       - name: Get dependencies
         run: |
-          ./getlibs.sh linux64
+          CMAKE_BUILD_TYPE=Release ./getlibs.sh linux64
       - name: Build with getlibs
         run: |
+          echo "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
           cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$PWD/libs-linux64" -DFIND_FATAL=ON
           cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
           (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
@@ -62,7 +63,7 @@ jobs:
           (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
       - name: Get dependencies
         run: |
-          CMAKE_TOOLCHAIN_FILE="$PWD/toolchains/mingw.cmake" ./getlibs.sh win64
+          CMAKE_BUILD_TYPE=Release CMAKE_TOOLCHAIN_FILE="$PWD/toolchains/mingw.cmake" ./getlibs.sh win64
       - name: Build with getlibs
         run: |
           echo "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
@@ -85,7 +86,7 @@ jobs:
           (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
       - name: Get dependencies
         run: |
-          ./getlibs.sh macos64
+          CMAKE_BUILD_TYPE=Release ./getlibs.sh macos64
       - name: Build with getlibs
         run: |
           cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$PWD/libs-macos64" -DFIND_FATAL=ON
