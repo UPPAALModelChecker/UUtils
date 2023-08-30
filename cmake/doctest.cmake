@@ -1,4 +1,4 @@
-find_package(doctest 2.4.8 QUIET)
+find_package(doctest 2.4.11 QUIET)
 
 if (doctest_FOUND)
   if (TARGET doctest::doctest_with_main)
