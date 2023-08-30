@@ -4,7 +4,7 @@ Library for miscellaneous utilities used in [UDBM](https://github.com/UPPAALMode
 ## Dependencies
 UUtils depend on tools like `git`, `cmake`, `ninja`/`make` and a compiler installed:
 ```shell
-sudo apt-get -y install git cmake ninja make gcc g++
+sudo apt-get -y install git cmake ninja-build make gcc g++
 ```
 UUtils also depends on libraries `xxHash`, `doctest`, `benchmark`, `boost`, which can be preinstalled using [getlibs.sh](getlibs.sh) script or just run the build commands bellow where `cmake` will download and compile the libraries on demand.
 
