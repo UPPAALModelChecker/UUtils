@@ -13,41 +13,40 @@
 #include <cinttypes>
 #include <cstddef>
 
-namespace uhash
+namespace uhash {
+/// Store non-NULL & non 0xffffffff pointers.
+class PointerTable
 {
-    /// Store non-NULL & non 0xffffffff pointers.
-    class PointerTable
-    {
-    public:
-        PointerTable();
-        ~PointerTable();
+public:
+    PointerTable();
+    ~PointerTable();
 
-        /// Clear the table.
-        void clear();
+    /// Clear the table.
+    void clear();
 
-        /// @return true if the pointer is in the table.
-        bool has(const void*) const;
+    /// @return true if the pointer is in the table.
+    bool has(const void*) const;
 
-        /// @return true if the pointer is newly added in the table.
-        bool add(const void*);
+    /// @return true if the pointer is newly added in the table.
+    bool add(const void*);
 
-        /// @return true if the pointer was removed from the table.
-        bool del(const void*);
+    /// @return true if the pointer was removed from the table.
+    bool del(const void*);
 
-        /// @return the number of pointer.
-        std::size_t size() const { return nbPointers; }
+    /// @return the number of pointer.
+    std::size_t size() const { return nbPointers; }
 
-        /// @return true if the tables contain the same set of pointers.
-        bool operator==(const PointerTable&) const;
+    /// @return true if the tables contain the same set of pointers.
+    bool operator==(const PointerTable&) const;
 
-    private:
-        void rehash();
+private:
+    void rehash();
 
-        std::size_t getIndex(const void* ptr) const { return (((std::size_t)ptr) >> 3u) & (tableSize - 1); }
+    std::size_t getIndex(const void* ptr) const { return (((std::size_t)ptr) >> 3u) & (tableSize - 1); }
 
-        const void** table;
-        std::size_t tableSize, nbPointers;
-    };
+    const void** table;
+    std::size_t tableSize, nbPointers;
+};
 }  // namespace uhash
 
 #endif  // INCLUDE_HASH_POINTERTABLE_H

@@ -20,11 +20,10 @@
 
 #include "hash/compute.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <vector>
-#include <cstdlib>
-
 #include <doctest/doctest.h>
+
+#include <vector>
+#include <cstdio>
 
 static const char teststr[] = "Dummy test string.... not too short, not too long.. well hopefully!";
 

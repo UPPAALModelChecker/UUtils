@@ -15,9 +15,8 @@
 
 #define MODULE_NAME "base"
 
-namespace base
-{
-    DEF_PROPERTY(EXACT_RELATION);
-    DEF_PROPERTY(FLAG);
-    DEF_PROPERTY(SIZE);
+namespace base {
+DEF_PROPERTY(EXACT_RELATION);
+DEF_PROPERTY(FLAG);
+DEF_PROPERTY(SIZE);
 }  // namespace base

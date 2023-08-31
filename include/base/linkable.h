@@ -37,129 +37,128 @@
  * STL are double linked.
  */
 
-namespace base
+namespace base {
+/** Generic untyped structure
+ * for generic manipulation.
+ */
+struct SingleLinkable_t
 {
-    /** Generic untyped structure
-     * for generic manipulation.
+    SingleLinkable_t* next;
+};
+
+/** Generic untyped structure
+ * for generic manipulation.
+ */
+struct DoubleLinkable_t : public SingleLinkable_t
+{
+    DoubleLinkable_t** previous;
+};
+
+/** Template for typed manipulation.
+ */
+template <class T>
+struct SingleLinkable : public SingleLinkable_t
+{
+    /** Link this linkable node from a given root.
+     * @pre struct your_struct : publid SingleLinkable<your_struct>
+     * @param fromWhere: from where the node
+     * should be linked.
      */
-    struct SingleLinkable_t
+    void link(T** fromWhere)
     {
-        SingleLinkable_t* next;
-    };
+        assert(fromWhere);
 
-    /** Generic untyped structure
-     * for generic manipulation.
+        next = *fromWhere;
+        *fromWhere = static_cast<T*>(this);
+    }
+
+    /** Unlink this linkable node from a given root.
+     * @pre struct your_struct : publid SingleLinkable<your_struct>
+     * @param  fromWhere: from where the node
+     * should be unlinked.
      */
-    struct DoubleLinkable_t : public SingleLinkable_t
+    void unlink(T** fromWhere)
     {
-        DoubleLinkable_t** previous;
-    };
+        assert(fromWhere && *fromWhere == static_cast<T*>(this));
 
-    /** Template for typed manipulation.
+        *fromWhere = getNext();
+    }
+
+    /** Access to the (typed) next linkable element.
+     * @return pointer to next element
      */
-    template <class T>
-    struct SingleLinkable : public SingleLinkable_t
-    {
-        /** Link this linkable node from a given root.
-         * @pre struct your_struct : publid SingleLinkable<your_struct>
-         * @param fromWhere: from where the node
-         * should be linked.
-         */
-        void link(T** fromWhere)
-        {
-            assert(fromWhere);
+    T* getNext() const { return static_cast<T*>(next); }
 
-            next = *fromWhere;
-            *fromWhere = static_cast<T*>(this);
-        }
-
-        /** Unlink this linkable node from a given root.
-         * @pre struct your_struct : publid SingleLinkable<your_struct>
-         * @param  fromWhere: from where the node
-         * should be unlinked.
-         */
-        void unlink(T** fromWhere)
-        {
-            assert(fromWhere && *fromWhere == static_cast<T*>(this));
-
-            *fromWhere = getNext();
-        }
-
-        /** Access to the (typed) next linkable element.
-         * @return pointer to next element
-         */
-        T* getNext() const { return static_cast<T*>(next); }
-
-        /** Access to the address of the next pointed element.
-         * @return address of the pointer to the next element.
-         */
-        T** getAtNext() { return reinterpret_cast<T**>(&next); }
-    };
-
-    /** Template for typed manipulation.
+    /** Access to the address of the next pointed element.
+     * @return address of the pointer to the next element.
      */
-    template <class T>
-    struct DoubleLinkable : public DoubleLinkable_t
+    T** getAtNext() { return reinterpret_cast<T**>(&next); }
+};
+
+/** Template for typed manipulation.
+ */
+template <class T>
+struct DoubleLinkable : public DoubleLinkable_t
+{
+    /** Link this linkable node from a given root.
+     * @pre struct your_struct : publid DoubleLinkable<your_struct>
+     * @param fromWhere: from where the node
+     * should be linked.
+     */
+    void link(T** fromWhere)
     {
-        /** Link this linkable node from a given root.
-         * @pre struct your_struct : publid DoubleLinkable<your_struct>
-         * @param fromWhere: from where the node
-         * should be linked.
+        assert(fromWhere);
+
+        previous = reinterpret_cast<DoubleLinkable_t**>(fromWhere);
+        next = *fromWhere;
+        if (next)
+            getNext()->previous = reinterpret_cast<DoubleLinkable_t**>(&next);
+        *fromWhere = static_cast<T*>(this);
+    }
+
+    /** Unlink this linkable node from a
+     * given root. We do not need the argument
+     * for the root since it is a double linked
+     * node.
+     * @pre struct your_struct : publid DoubleLinkable<your_struct>
+     */
+    void unlink()
+    {
+        assert(previous && *previous == static_cast<T*>(this));
+
+        *previous = getNext();
+        if (next)
+            getNext()->previous = previous;
+    }
+
+    /** Access to the (typed) next linkable element.
+     * @return pointer to next element
+     */
+    T* getNext() const { return static_cast<T*>(next); }
+
+    /** Access to the address of the next pointed element.
+     * @return address of the pointer to the next element.
+     */
+    T** getAtNext() { return reinterpret_cast<T**>(&next); }
+
+    /** Access to the previous element.
+     * @pre there is a previous element: previous != NULL
+     * @return address of previous element.
+     */
+    T* getPrevious() const
+    {
+        /* the structure has next* and previous**
+         * where previous is the address of the previous
+         * next* == beginning of the previous element.
          */
-        void link(T** fromWhere)
-        {
-            assert(fromWhere);
+        return reinterpret_cast<T*>(previous);
+    }
 
-            previous = reinterpret_cast<DoubleLinkable_t**>(fromWhere);
-            next = *fromWhere;
-            if (next)
-                getNext()->previous = reinterpret_cast<DoubleLinkable_t**>(&next);
-            *fromWhere = static_cast<T*>(this);
-        }
-
-        /** Unlink this linkable node from a
-         * given root. We do not need the argument
-         * for the root since it is a double linked
-         * node.
-         * @pre struct your_struct : publid DoubleLinkable<your_struct>
-         */
-        void unlink()
-        {
-            assert(previous && *previous == static_cast<T*>(this));
-
-            *previous = getNext();
-            if (next)
-                getNext()->previous = previous;
-        }
-
-        /** Access to the (typed) next linkable element.
-         * @return pointer to next element
-         */
-        T* getNext() const { return static_cast<T*>(next); }
-
-        /** Access to the address of the next pointed element.
-         * @return address of the pointer to the next element.
-         */
-        T** getAtNext() { return reinterpret_cast<T**>(&next); }
-
-        /** Access to the previous element.
-         * @pre there is a previous element: previous != NULL
-         * @return address of previous element.
-         */
-        T* getPrevious() const
-        {
-            /* the structure has next* and previous**
-             * where previous is the address of the previous
-             * next* == beginning of the previous element.
-             */
-            return reinterpret_cast<T*>(previous);
-        }
-
-        /** Cast access to previous.
-         * @return typed previous.
-         */
-        T** getPreviousPtr() const { return reinterpret_cast<T**>(previous); }
-    };
+    /** Cast access to previous.
+     * @return typed previous.
+     */
+    T** getPreviousPtr() const { return reinterpret_cast<T**>(previous); }
+};
 }  // namespace base
 
 #endif  // INCLUDE_BASE_LINKABLE_H

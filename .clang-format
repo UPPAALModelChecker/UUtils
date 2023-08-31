@@ -30,7 +30,7 @@ BraceWrapping:
   AfterControlStatement: false
   AfterEnum:       false
   AfterFunction:   true
-  AfterNamespace:  true
+  AfterNamespace:  false
   AfterObjCDeclaration: true
   AfterStruct:     true
   AfterUnion:      true
@@ -52,7 +52,7 @@ BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: true
 ColumnLimit:     120
 CommentPragmas:  '^ IWYU pragma:'
-CompactNamespaces: false
+CompactNamespaces: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
@@ -65,7 +65,8 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
-IncludeBlocks:   Regroup
+#IncludeBlocks:   Regroup
+IncludeBlocks:   Preserve
 IncludeCategories:
  - Regex: '^"[a-zA-Z0-9_]*\.'
    Priority: 1
@@ -154,12 +155,15 @@ IncludeCategories:
  - Regex: '^<boost/'
    Priority: 3
    SortPriority: 29
+ - Regex: '^<doctest/'
+   Priority: 3
+   SortPriority: 30
  - Regex: '^<[a-bd-z0-9][a-z0-9_]*(\.[a-z]*)?>$'
    Priority: 4
    SortPriority: 30
- - Regex: '^<c'
-   Priority: 4
-   SortPriority: 31
+# - Regex: '^<c'
+#   Priority: 4
+#   SortPriority: 31
  #IncludeIsMainRegex: '([-_](test|unittest))?$'
 IndentCaseLabels: false
 IndentPPDirectives: None
@@ -171,7 +175,7 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 1
-NamespaceIndentation: All
+NamespaceIndentation: None
 ObjCBinPackProtocolList: Never
 ObjCBlockIndentWidth: 2
 ObjCSpaceAfterProperty: false
@@ -213,7 +217,8 @@ RawStringFormats:
       - ParseTextProtoOrDie
     CanonicalDelimiter: ''
 ReflowComments:  true
-SortIncludes:    true
+#SortIncludes:    true
+SortIncludes:    false
 SortUsingDeclarations: false
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
@@ -251,7 +256,7 @@ BraceWrapping:
   AfterControlStatement: false
   AfterEnum:       false
   AfterFunction:   true
-  AfterNamespace:  true
+  AfterNamespace:  false
   AfterObjCDeclaration: true
   AfterStruct:     true
   AfterUnion:      true

@@ -23,7 +23,6 @@
 
 #include "base/inttypes.h"
 
-#define XXH_INLINE_ALL
 #include <assert.h>
 #include <string.h>
 #include <xxhash.h>

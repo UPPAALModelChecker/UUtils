@@ -18,42 +18,41 @@
 #include <iosfwd>
 #include <chrono>
 
-namespace base
+namespace base {
+/** A simple timer to measure CPU time.
+ */
+class Timer
 {
-    /** A simple timer to measure CPU time.
+public:
+    explicit Timer(bool running = true);
+
+    /**
+     * Access to CPU time. Returns the CPU time consumed since the
+     * last call of this method or since initialization of the
+     * object if the method has not been called before.
+     *
+     * @returns CPU time in seconds.
      */
-    class Timer
+    double getElapsed();
+
+    void pause();
+    void start();
+
+    class AutoStartStop
     {
     public:
-        explicit Timer(bool running = true);
-
-        /**
-         * Access to CPU time. Returns the CPU time consumed since the
-         * last call of this method or since initialization of the
-         * object if the method has not been called before.
-         *
-         * @returns CPU time in seconds.
-         */
-        double getElapsed();
-
-        void pause();
-        void start();
-
-        class AutoStartStop
-        {
-        public:
-            explicit AutoStartStop(Timer&);
-            ~AutoStartStop();
-
-        private:
-            Timer& timer;
-        };
+        explicit AutoStartStop(Timer&);
+        ~AutoStartStop();
 
     private:
-        std::chrono::nanoseconds nanoseconds{0};
-        bool paused = false;
-        std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> timer;
+        Timer& timer;
     };
+
+private:
+    std::chrono::nanoseconds nanoseconds{0};
+    bool paused = false;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> timer;
+};
 }  // namespace base
 
 /**

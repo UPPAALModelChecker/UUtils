@@ -1,33 +1,51 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(SET CMP0048 NEW) # project() command manages VERSION variables
 project(UUtils VERSION 1.2.0 HOMEPAGE_URL "https://github.com/UPPAALModelChecker/UUtils" LANGUAGES CXX C)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
+include(FetchContent)
+# set(FETCHCONTENT_QUIET FALSE) # for debugging FetchContent
 
-option(TESTING OFF)
-if(TESTING)
-    enable_testing()
-endif(TESTING)
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUID_TYPE Release)
+endif ()
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(UUtils_WITH_BENCHMARKS_DEFAULT ON)
+else ()
+  set(UUtils_WITH_BENCHMARKS_DEFAULT OFF)
+endif ()
 
-set(CMAKE_CXX_STANDARD 20)
-cmake_policy(SET CMP0048 NEW) # project() command manages VERSION variables
+option(UUtils_WITH_TESTS "Enable UUtils unit tests" ON)
+option(UUtils_WITH_BENCHMARKS "Enable UUtils benchmarks (depends on tests)" ${UUtils_WITH_BENCHMARKS_DEFAULT})
 
-set(MODULES base debug hash io)
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${CMAKE_CURRENT_SOURCE_DIR}/libs")
+include(cmake/stdcpp.cmake)
+include(cmake/sanitizer.cmake)
+if(UUtils_WITH_TESTS)
+  include(cmake/doctest.cmake)
+endif (UUtils_WITH_TESTS)
+if (UUtils_WITH_BENCHMARKS)
+  include(cmake/benchmark.cmake)
+endif (UUtils_WITH_BENCHMARKS)
+include(cmake/xxhash.cmake)
+set(BOOST_INCLUDE_LIBRARIES headers math)
+include(cmake/boost.cmake)
 
-set(Boost_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libs/boost")
-find_package(Boost 1.74 REQUIRED)
-find_package(xxHash 0.8.0 REQUIRED COMPONENTS xxhash)
-
-message(STATUS "Boost include: ${Boost_INCLUDE_DIRS}")
+if(UUtils_WITH_TESTS)
+  enable_testing()
+endif (UUtils_WITH_TESTS)
 
 include_directories("include")
 
+set(MODULES base debug hash)
 foreach(MODULE ${MODULES})
   add_subdirectory("src/${MODULE}")
-  if(TESTING)
-      add_subdirectory("test/${MODULE}")
-  endif(TESTING)
 endforeach()
+
+if(UUtils_WITH_TESTS)
+  foreach(MODULE ${MODULES})
+    add_subdirectory("test/${MODULE}")
+  endforeach()
+endif(UUtils_WITH_TESTS)
 
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/UUtilsConfigVersion.cmake VERSION ${PACKAGE_VERSION} COMPATIBILITY SameMajorVersion)
 

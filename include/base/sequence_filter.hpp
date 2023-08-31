@@ -48,9 +48,13 @@ public:
     sequence_filter(const TContainer& container, Predicate&& predicate): container(container), predicate(predicate) {}
 
     struct FilterIterator
-        : std::iterator<typename TIterator::iterator_category, TElement, typename TIterator::difference_type,
-                        typename TIterator::pointer, typename TIterator::reference>
     {
+        using iterator_category = typename TIterator::iterator_category;
+        using value_type = TElement;
+        using difference_type = typename TIterator::difference_type;
+        using pointer = typename TIterator::pointer;
+        using reference = typename TIterator::reference;
+
         FilterIterator(TIterator iter, const sequence_filter<TContainer, Predicate>& parent): iter(iter), parent(parent)
         {}
         TIterator iter;

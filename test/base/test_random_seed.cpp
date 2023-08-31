@@ -1,13 +1,8 @@
 // -*- mode: C++; c-file-style: "stroustrup"; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
 #include "base/random.h"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <random>
-
 #include <doctest/doctest.h>
-
-using namespace std;
+#include <random>
 
 TEST_CASE("Random seed")
 {

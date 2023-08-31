@@ -17,40 +17,39 @@
 #include <iostream>
 #include <cassert>
 
-namespace base
+namespace base {
+Timer::AutoStartStop::AutoStartStop(Timer& t): timer(t) { timer.start(); }
+
+Timer::AutoStartStop::~AutoStartStop() { timer.pause(); }
+
+Timer::Timer(bool running): paused(!running) { timer = std::chrono::system_clock::now(); }
+
+void Timer::pause()
 {
-    Timer::AutoStartStop::AutoStartStop(Timer& t): timer(t) { timer.start(); }
-
-    Timer::AutoStartStop::~AutoStartStop() { timer.pause(); }
-
-    Timer::Timer(bool running): paused(!running) { timer = std::chrono::system_clock::now(); }
-
-    void Timer::pause()
-    {
-        assert(!paused);
-        if (!paused) {
-            paused = true;
-            auto end = std::chrono::system_clock::now();
-            nanoseconds += end - timer;
-        }
+    assert(!paused);
+    if (!paused) {
+        paused = true;
+        auto end = std::chrono::system_clock::now();
+        nanoseconds += end - timer;
     }
+}
 
-    void Timer::start()
-    {
-        assert(paused);
-        paused = false;
-        timer = std::chrono::system_clock::now();
-    }
+void Timer::start()
+{
+    assert(paused);
+    paused = false;
+    timer = std::chrono::system_clock::now();
+}
 
-    double Timer::getElapsed()
-    {
-        auto time = nanoseconds;
-        if (!paused) {
-            auto end = std::chrono::system_clock::now();
-            time += end - timer;
-        }
-        return std::chrono::duration_cast<std::chrono::milliseconds>(time).count() / 1000.0;
+double Timer::getElapsed()
+{
+    auto time = nanoseconds;
+    if (!paused) {
+        auto end = std::chrono::system_clock::now();
+        time += end - timer;
     }
+    return std::chrono::duration_cast<std::chrono::milliseconds>(time).count() / 1000.0;
+}
 
 }  // namespace base
 

@@ -63,9 +63,9 @@ std::ostream& debug_cppPrintDiffBitstrings(std::ostream& out, const uint32_t* s1
 
 /** Print bits, lower bits first.
  * @param i: the int to print.
- * @param out: output stream where to print (cerr,cout)
+ * @param os: output stream where to print (cerr,cout)
  */
-std::ostream& debug_cppPrintBits(std::ostream& out, uint32_t i);
+std::ostream& debug_cppPrintBits(std::ostream& os, uint32_t i);
 
 /** Print diff bits of i with j, lower bits first.
  * @param i,j: the ints to print.
