@@ -11,6 +11,7 @@ if [ $# -eq 0 ] ; then
   echo "win* targets are cross-compiled on Linux assuming cmake, ninja/make, MinGW and Wine installed."
   echo "macos* targets are compiled on MacOS assuming cmake, ninja/make, gcc and g++ are installed."
   echo "For targets with 'lib' in their name script will call getlibs to build the dependencies in advance."
+  echo "For sanitized builds insert -ubsan and/or -asan suffix before -debug/-release."
   echo "The script is sensitive to CMAKE_BUILD_TYPE and other environment variables"
   exit 1
 fi
@@ -44,7 +45,7 @@ for target in "$@" ; do
             ;;
     esac
     case "$target" in
-        *lib*)
+        *-lib*)
 	    CMAKE_BUILD_TYPE=Release "$PROJECT_DIR/getlibs.sh" "$BUILD_TARGET"
             export CMAKE_PREFIX_PATH="$PROJECT_DIR/libs-$BUILD_TARGET"
             BUILD_SUFFIX="-libs"
@@ -52,12 +53,29 @@ for target in "$@" ; do
             ;;
     esac
     case "$target" in
-        *debug)
+        *-ubsan*)
+            BUILD_SUFFIX="${BUILD_SUFFIX}-ubsan"
+	    BUILD_EXTRA="-DUBSAN=ON ${BUILD_EXTRA}"
+            ;;
+    esac
+    case "$target" in
+        *-asan*)
+            BUILD_SUFFIX="${BUILD_SUFFIX}-asan"
+	    BUILD_EXTRA="-DASAN=ON ${BUILD_EXTRA}"
+            ;;
+    esac
+    case "$target" in
+        *-lsan*)
+            BUILD_SUFFIX="${BUILD_SUFFIX}-lsan"
+	    BUILD_EXTRA="-DLSAN=ON ${BUILD_EXTRA}"
+            ;;
+    esac
+    case "$target" in
+        *-debug)
             export CMAKE_BUILD_TYPE=Debug
             ;;
-        *release)
+        *-release)
             export CMAKE_BUILD_TYPE=Release
-            BUILD_EXTRA="-DUUtils_WITH_BENCHMARKS=ON $BUILD_EXTRA"
             ;;
         *)
             echo "Failed to recognize build type: $target"

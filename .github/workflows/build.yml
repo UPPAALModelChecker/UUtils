@@ -31,7 +31,7 @@ jobs:
       - name: Build without getlibs
         run: |
           export CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-          cmake -S . -B $BUILD_DIR
+          cmake -S . -B $BUILD_DIR -DUBSAN=ON
           cmake --build $BUILD_DIR --config $CMAKE_BUILD_TYPE
           (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
       - name: Get dependencies
@@ -40,7 +40,7 @@ jobs:
       - name: Build with getlibs
         run: |
           export CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$PWD/libs-linux64" -DFIND_FATAL=ON
+          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$PWD/libs-linux64" -DUBSAN=ON -DFIND_FATAL=ON
           cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
           (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
   build-win:
