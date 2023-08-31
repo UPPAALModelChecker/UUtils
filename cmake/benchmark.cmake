@@ -1,4 +1,4 @@
-find_package(benchmark 1.8.2 QUIET) # benchmarkConfigVersion may have garbage version numbers
+find_package(benchmark QUIET) # benchmarkConfigVersion may have garbage version numbers
 
 if (benchmark_FOUND)
   message(STATUS "Found benchmark: ${benchmark_DIR}")

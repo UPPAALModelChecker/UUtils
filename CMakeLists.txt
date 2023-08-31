@@ -19,6 +19,7 @@ option(UUtils_WITH_TESTS "Enable UUtils unit tests" ON)
 option(UUtils_WITH_BENCHMARKS "Enable UUtils benchmarks (depends on tests)" ${UUtils_WITH_BENCHMARKS_DEFAULT})
 
 include(cmake/stdcpp.cmake)
+include(cmake/sanitizer.cmake)
 if(UUtils_WITH_TESTS)
   include(cmake/doctest.cmake)
 endif (UUtils_WITH_TESTS)
