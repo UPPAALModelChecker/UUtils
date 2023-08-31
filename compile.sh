@@ -3,15 +3,18 @@ set -e
 
 if [ $# -eq 0 ] ; then
   echo "Script $0 compiles this library for a set of targets specified as arguments."
-  echo "Possible arguments:"
-  echo "  linux64-release linux64-debug linux64-libs-release linux64-libs-debug"
-  echo "  win64-release win64-debug win64-libs-release win64-libs-debug"
-  echo "  macos64-release macos64-debug macos64-libs-release macos64-libs-debug"
-  echo "linux* targets are compiled on Linux assuming cmake, ninja/make, gcc and g++ installed."
-  echo "win* targets are cross-compiled on Linux assuming cmake, ninja/make, MinGW and Wine installed."
-  echo "macos* targets are compiled on MacOS assuming cmake, ninja/make, gcc and g++ are installed."
-  echo "For targets with 'lib' in their name script will call getlibs to build the dependencies in advance."
-  echo "For sanitized builds insert -ubsan and/or -asan suffix before -debug/-release."
+  echo "Possible targets:"
+  echo "  linux64 - targets are compiled on Linux assuming cmake, ninja/make, gcc and g++ installed."
+  echo "  win64 - targets are cross-compiled on Linux assuming cmake, ninja/make, MinGW and Wine installed."
+  echo "  macos64 - targets are compiled on MacOS assuming cmake, ninja/make, gcc and g++ are installed."
+  echo "Possible target suffixes (append to the target making one word):"
+  echo "  -libs - build with dependent libraries to be installed by getlib.sh"
+  echo "  -ubsan - build with undefined behavior sanitizer (may break benchmarks with g++-13)"
+  echo "  -lsan - build with memory leak sanitizer (expect test_new to fail as it leaks on purpose)"
+  echo "  -asan - build with address sanitizer (expect test_new to fail as it leaks on purpose)"
+  echo "  -debug/-release - build either with debug information or optimized for release"
+  echo "For example, build linux64 release with getlibs and undefined behavior sanitizer:"
+  echo "  $0 linux64-libs-ubsan-release"
   echo "The script is sensitive to CMAKE_BUILD_TYPE and other environment variables"
   exit 1
 fi
@@ -35,9 +38,9 @@ for target in "$@" ; do
         win64*)
             BUILD_TARGET=win64
             export CMAKE_TOOLCHAIN_FILE="$PROJECT_DIR/toolchains/mingw.cmake"
-	    if [ -z "$WINEPATH" ]; then
-		export WINEPATH=$("$PROJECT_DIR/mingw-winepath.sh")
-	    fi
+            if [ -z "$WINEPATH" ]; then
+                export WINEPATH=$("$PROJECT_DIR/mingw-winepath.sh")
+            fi
             ;;
         *)
             echo "Failed to recognize target platform: $target"
@@ -46,28 +49,28 @@ for target in "$@" ; do
     esac
     case "$target" in
         *-lib*)
-	    CMAKE_BUILD_TYPE=Release "$PROJECT_DIR/getlibs.sh" "$BUILD_TARGET"
+            CMAKE_BUILD_TYPE=Release "$PROJECT_DIR/getlibs.sh" "$BUILD_TARGET"
             export CMAKE_PREFIX_PATH="$PROJECT_DIR/libs-$BUILD_TARGET"
             BUILD_SUFFIX="-libs"
-	    BUILD_EXTRA="-DFIND_FATAL=ON ${BUILD_EXTRA}"
+            BUILD_EXTRA="-DFIND_FATAL=ON ${BUILD_EXTRA}"
             ;;
     esac
     case "$target" in
         *-ubsan*)
             BUILD_SUFFIX="${BUILD_SUFFIX}-ubsan"
-	    BUILD_EXTRA="-DUBSAN=ON ${BUILD_EXTRA}"
+            BUILD_EXTRA="-DUBSAN=ON ${BUILD_EXTRA}"
             ;;
     esac
     case "$target" in
         *-asan*)
             BUILD_SUFFIX="${BUILD_SUFFIX}-asan"
-	    BUILD_EXTRA="-DASAN=ON ${BUILD_EXTRA}"
+            BUILD_EXTRA="-DASAN=ON ${BUILD_EXTRA}"
             ;;
     esac
     case "$target" in
         *-lsan*)
             BUILD_SUFFIX="${BUILD_SUFFIX}-lsan"
-	    BUILD_EXTRA="-DLSAN=ON ${BUILD_EXTRA}"
+            BUILD_EXTRA="-DLSAN=ON ${BUILD_EXTRA}"
             ;;
     esac
     case "$target" in
@@ -78,9 +81,9 @@ for target in "$@" ; do
             export CMAKE_BUILD_TYPE=Release
             ;;
         *)
-            echo "Failed to recognize build type: $target"
-            echo "Using Debug instead"
-            export CMAKE_BUILD_TYPE=Debug
+            if [ -z "$CMAKE_BUILD_TYPE" ]; then
+                export CMAKE_BUILD_TYPE=Debug
+            fi
     esac
     BUILD_DIR="build-${BUILD_TARGET}${BUILD_SUFFIX}-${CMAKE_BUILD_TYPE,,}"
     echo "COMPILE for $target in $BUILD_DIR using $BUILD_EXTRA"
