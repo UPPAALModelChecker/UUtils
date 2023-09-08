@@ -32,6 +32,9 @@ for target in "$@" ; do
         linux64*)
             BUILD_TARGET=linux64
             ;;
+        linux32*)
+            BUILD_TARGET=linux32
+            ;;
         macos*)
             BUILD_TARGET=macos64
             ;;

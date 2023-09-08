@@ -16,7 +16,11 @@ if (XXHASH_PATH)
     cmake_path(GET XXHASH_PATH PARENT_PATH XXHASH_INCLUDE_DIR)
     add_library(xxHash INTERFACE)
     target_compile_definitions(xxHash INTERFACE XXH_INLINE_ALL)
-    target_include_directories(xxHash INTERFACE ${XXHASH_INCLUDE_DIR})
+    target_include_directories(xxHash
+            INTERFACE
+            $<BUILD_INTERFACE:${XXHASH_INCLUDE_DIR}>
+            $<INSTALL_INTERFACE:include>
+    )
   else()
     message(STATUS "Found xxHash-${XXHASH_VERSION} is too old, need at lease ${XXHASH_VERSION_MINIMUM}")
   endif()
@@ -54,7 +58,11 @@ else(xxHash_FOUND)
     add_library(xxHash INTERFACE)
 #    set_property(TARGET xxHash APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${XXHASH_INCLUDE_DIR})
     target_compile_definitions(xxHash INTERFACE XXH_INLINE_ALL)
-    target_include_directories(xxHash INTERFACE ${XXHASH_INCLUDE_DIR})
+    target_include_directories(xxHash
+            INTERFACE
+            $<BUILD_INTERFACE:${XXHASH_INCLUDE_DIR}>
+            $<INSTALL_INTERFACE:include>
+    )
 #    target_link_libraries(xxHash INTERFACE xxHash::xhash)
     set(xxHash_FOUND TRUE)
     message(STATUS "Got xxHash: ${XXHASH_INCLUDE_DIR}")

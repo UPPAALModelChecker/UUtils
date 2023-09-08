@@ -16,7 +16,7 @@ else(benchmark_FOUND)
   FetchContent_Declare(
     benchmark
     GIT_REPOSITORY https://github.com/google/benchmark
-    GIT_TAG db3e000c1e6675f70ae41895ca1e25b274e52554
+    GIT_TAG v1.8.3
     GIT_SHALLOW TRUE # get only the last commit version
     GIT_PROGRESS TRUE # show progress of download
     # FIND_PACKAGE_ARGS NAMES benchmark
