@@ -1,5 +1,6 @@
 add_library(hash STATIC compute.cpp PointerTable.cpp tables.cpp)
 target_link_libraries(hash PUBLIC xxHash)
+add_library(UUtils::hash ALIAS hash)
 
 target_include_directories(hash
                            INTERFACE

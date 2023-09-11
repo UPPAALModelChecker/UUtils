@@ -1,6 +1,7 @@
 file(GLOB udebug_source "*.c" "*.cpp" "*.h")
 
 add_library(udebug STATIC ${udebug_source} )
+add_library(UUtils::udebug ALIAS udebug)
 
 target_include_directories(udebug
                            INTERFACE
