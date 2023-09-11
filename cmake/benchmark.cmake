@@ -16,7 +16,7 @@ else(benchmark_FOUND)
   FetchContent_Declare(
     benchmark
     GIT_REPOSITORY https://github.com/google/benchmark
-    GIT_TAG db3e000c1e6675f70ae41895ca1e25b274e52554
+    GIT_TAG v1.8.3
     GIT_SHALLOW TRUE # get only the last commit version
     GIT_PROGRESS TRUE # show progress of download
     # FIND_PACKAGE_ARGS NAMES benchmark
@@ -25,11 +25,10 @@ else(benchmark_FOUND)
     USES_TERMINAL_BUILD ON
     USES_TERMINAL_INSTALL ON
     )
-  FetchContent_MakeAvailable(benchmark)
-  if (benchmark_SOURCE_DIR)
-    set(benchmark_FOUND TRUE)
+  FetchContent_GetProperties(benchmark)
+  if (NOT benchmark_POPULATED)
+    FetchContent_Populate(benchmark)
+    add_subdirectory(${benchmark_SOURCE_DIR} ${benchmark_BINARY_DIR} EXCLUDE_FROM_ALL)
     message(STATUS "Got benchmark: ${benchmark_SOURCE_DIR}")
-  else (benchmark_SOURCE_DIR)
-    message(FATAL_ERROR "Failed to fetch benchmark")
-  endif (benchmark_SOURCE_DIR)
+  endif()
 endif(benchmark_FOUND)
