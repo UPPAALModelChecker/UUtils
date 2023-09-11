@@ -1,10 +1,10 @@
 if (UUtils_WITH_BENCHMARKS)
   add_executable(bm_compute bm_compute.cpp)
-  target_link_libraries(bm_compute PRIVATE hash xxHash benchmark::benchmark_main)
+  target_link_libraries(bm_compute PRIVATE hash benchmark::benchmark_main)
 endif (UUtils_WITH_BENCHMARKS)
 
 add_executable(test_compute test_compute.cpp)
-target_link_libraries(test_compute PRIVATE xxHash doctest_with_main)
+target_link_libraries(test_compute PRIVATE hash doctest_with_main)
 add_test(NAME hash_compute COMMAND test_compute)
 
 add_executable(test_tables test_tables.cpp)

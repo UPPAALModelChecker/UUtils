@@ -15,12 +15,12 @@ if (UUtils_WITH_BENCHMARKS)
 endif (UUtils_WITH_BENCHMARKS)
 
 add_executable(test_allocator test_allocator.cpp)
-target_link_libraries(test_allocator PRIVATE base xxHash)
+target_link_libraries(test_allocator PRIVATE base)
 add_test(NAME base_allocator_10000 COMMAND test_allocator 10000)
 add_test(NAME base_allocator_30000 COMMAND test_allocator 30000)
 
 add_executable(test_array test_array.cpp)
-target_link_libraries(test_array PRIVATE xxHash)
+target_link_libraries(test_array PRIVATE base)
 add_test(NAME base_array_10_0 COMMAND test_array 10 0)
 add_test(NAME base_array_10_1 COMMAND test_array 10 1)
 add_test(NAME base_array_10_2 COMMAND test_array 10 2)
@@ -31,7 +31,7 @@ target_link_libraries(test_bit_string PRIVATE base udebug)
 add_test(NAME base_bit_string COMMAND test_bit_string)
 
 add_executable(test_crash_allocator test_crash_allocator.cpp)
-target_link_libraries(test_crash_allocator PRIVATE base xxHash)
+target_link_libraries(test_crash_allocator PRIVATE base)
 add_test(NAME base_crash_allocator_0 COMMAND test_crash_allocator 0)
 add_test(NAME base_crash_allocator_1 COMMAND test_crash_allocator 1)
 add_test(NAME base_crash_allocator_2 COMMAND test_crash_allocator 2)
@@ -50,6 +50,7 @@ add_test(NAME base_item_allocator_10 COMMAND test_item_allocator 10)
 add_test(NAME base_item_allocator_100000 COMMAND test_item_allocator 100000)
 
 add_executable(test_meta test_meta.cpp)
+target_link_libraries(test_meta PRIVATE base)
 add_test(NAME base_meta COMMAND test_meta)
 
 add_executable(test_random test_random.cpp)
@@ -64,10 +65,11 @@ target_compile_definitions(test_randomness PUBLIC _USE_MATH_DEFINES) # M_PI
 target_link_libraries(test_randomness PRIVATE base Boost::math)
 
 add_executable(test_sequencefilter test_sequencefilter.cpp)
-target_link_libraries(test_sequencefilter PRIVATE doctest_with_main)
+target_link_libraries(test_sequencefilter PRIVATE base doctest_with_main)
 add_test(NAME test_sequencefilter COMMAND test_sequencefilter)
 
 add_executable(test_time test_time.cpp)
+target_link_libraries(test_time PRIVATE base)
 add_test(NAME base_time COMMAND test_time)
 set_tests_properties(base_time PROPERTIES DISABLED TRUE) # takes too much time
 

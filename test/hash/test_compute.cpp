@@ -18,7 +18,7 @@
 #undef NDEBUG
 #endif
 
-#include "hash/compute.h"
+#include <hash/compute.h>
 
 #include <doctest/doctest.h>
 

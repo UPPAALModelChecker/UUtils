@@ -11,9 +11,9 @@
  *
  **********************************************************************/
 
-#include "hash/compute.h"
+#include <hash/compute.h>
 
-#include "base/memory.hpp"
+#include <base/memory.hpp>
 
 #ifdef MURMUR2_HASH1
 

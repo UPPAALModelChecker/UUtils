@@ -36,8 +36,6 @@ if(UUtils_WITH_TESTS)
   enable_testing()
 endif (UUtils_WITH_TESTS)
 
-include_directories("include")
-
 set(MODULES base debug hash)
 foreach(MODULE ${MODULES})
   add_subdirectory("src/${MODULE}")

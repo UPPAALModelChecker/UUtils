@@ -12,13 +12,13 @@
 ///////////////////////////////////////////////////////////////////
 
 #ifndef NDEBUG
-#include "base/array_t.h"
+//#include <base/array_t.h>
 
-#include <iostream>
+//#include <iostream>
 #endif
 
-#include "hash/tables.h"
-#include "debug/macros.h"
+#include <hash/tables.h>
+//#include <debug/macros.h>
 
 using namespace base;
 
