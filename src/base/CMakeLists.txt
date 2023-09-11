@@ -1,13 +1,10 @@
-add_library(random OBJECT random.cpp)
-target_link_libraries(random PRIVATE Boost::headers Boost::math)
-
 add_library(base STATIC bitstring.c c_allocator.c doubles.c platform.c DataAllocator.cpp Enumerator.cpp exceptions.cpp
-        intutils.cpp property.cpp stats.cpp Timer.cpp)
+        intutils.cpp property.cpp stats.cpp Timer.cpp random.cpp)
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
-    target_link_libraries(base PUBLIC hash PRIVATE udebug random xxHash Boost::headers iphlpapi psapi)
+    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash Boost::headers Boost::math iphlpapi psapi)
 else()
-    target_link_libraries(base PUBLIC hash PRIVATE udebug random xxHash Boost::headers)
+    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash Boost::headers Boost::math)
 endif()
 
 target_include_directories(base
@@ -16,5 +13,5 @@ target_include_directories(base
                             $<INSTALL_INTERFACE:include>
                            )
 
-install(TARGETS base random EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT base)
+install(TARGETS base EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT base)
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../include/base DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT base)
