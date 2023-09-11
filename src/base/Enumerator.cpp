@@ -18,17 +18,17 @@ namespace base {
 SingleLinkable_t* LinkableEnumerator::getNextLinkable()
 {
     SingleLinkable_t* item = current;
-    if (item)  // got a bucket, prepare for next
+    if (item != nullptr)  // got a bucket, prepare for next
     {
         current = current->next;
-    } else if (size) {
+    } else if (size != 0) {
         // find 1st non null
         do {
             table++;
-        } while (--size && !*table);
+        } while (--size != 0 && *table == nullptr);
 
         // if valid
-        if (size) {
+        if (size != 0) {
             // while stop condition: nEntries == 0 || *table != NULL
             // if nEntries == 0, we are not here, item stays NULL
             // else *table not NULL and valid.
