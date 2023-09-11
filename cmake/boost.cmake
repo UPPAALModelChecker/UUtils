@@ -39,46 +39,13 @@ else(Boost_FOUND)
     USES_TERMINAL_BUILD ON
     USES_TERMINAL_INSTALL ON
     )
-  FetchContent_MakeAvailable(Boost) # Fetches, builds and creates boost_{SOURCE_DIR,BINARY_DIR}
-  
-  if (Boost_SOURCE_DIR)
-    # crazy workaround for stupid CMake demand to export header-only libraries:
-#    set(BOOST_INCLUDE_ASSERT_DIR ${Boost_SOURCE_DIR}/libs/assert/include)
-#    set(BOOST_INCLUDE_CONFIG_DIR ${Boost_SOURCE_DIR}/libs/config/include)
-#    set(BOOST_INCLUDE_STATIC_ASSERT_DIR ${Boost_SOURCE_DIR}/libs/static_assert/include)
-#    set(BOOST_INCLUDE_TYPE_TRAITS_DIR ${Boost_SOURCE_DIR}/libs/type_traits/include)
-#    set(BOOST_INCLUDE_CORE_DIR ${Boost_SOURCE_DIR}/libs/core/include)
-#    set(BOOST_INCLUDE_THROW_EXCEPTION_DIR ${Boost_SOURCE_DIR}/libs/throw_exception/include)
-#    set(BOOST_INCLUDE_PREPROCESSOR_DIR ${Boost_SOURCE_DIR}/libs/preprocessor/include)
-#    set(BOOST_INCLUDE_MATH_DIR ${Boost_SOURCE_DIR}/libs/math/include)
-#    set(BOOST_INCLUDE_RANDOM_DIR ${Boost_SOURCE_DIR}/libs/random/include)
-#    set(BOOST_INCLUDE_IO_DIR ${Boost_SOURCE_DIR}/libs/io/include)
-#    set(BOOST_INCLUDE_RANGE_DIR ${Boost_SOURCE_DIR}/libs/range/include)
-#    set(BOOST_INCLUDE_UTILITY_DIR ${Boost_SOURCE_DIR}/libs/utility/include)
-#    set(BOOST_INCLUDE_CONCEPT_CHECK_DIR ${Boost_SOURCE_DIR}/libs/concept_check/include)
-#    set(BOOST_INCLUDE_ITERATOR_DIR ${Boost_SOURCE_DIR}/libs/iterator/include)
-#    set(BOOST_INCLUDE_MPL_DIR ${Boost_SOURCE_DIR}/libs/mpl/include)
-#    set(BOOST_INCLUDE_ARRAY_DIR ${Boost_SOURCE_DIR}/libs/array/include)
-#    set(BOOST_INCLUDE_INTEGER_DIR ${Boost_SOURCE_DIR}/libs/integer/include)
-#    set(BOOST_INCLUDE_DIRS
-#      ${BOOST_INCLUDE_ASSERT_DIR}
-#      ${BOOST_INCLUDE_CONFIG_DIR}
-#      ${BOOST_INCLUDE_STATIC_ASSERT_DIR}
-#      ${BOOST_INCLUDE_TYPE_TRAITS_DIR}
-#      ${BOOST_INCLUDE_CORE_DIR}
-#      ${BOOST_INCLUDE_THROW_EXCEPTION_DIR}
-#      ${BOOST_INCLUDE_PREPROCESSOR_DIR}
-#      ${BOOST_INCLUDE_MATH_DIR}
-#      ${BOOST_INCLUDE_RANDOM_DIR}
-#      ${BOOST_INCLUDE_IO_DIR}
-#      ${BOOST_INCLUDE_RANGE_DIR}
-#      ${BOOST_INCLUDE_UTILITY_DIR}
-#      ${BOOST_INCLUDE_CONCEPT_CHECK_DIR}
-#      ${BOOST_INCLUDE_ITERATOR_DIR}
-#      ${BOOST_INCLUDE_MPL_DIR}
-#      ${BOOST_INCLUDE_ARRAY_DIR}
-#      ${BOOST_INCLUDE_INTEGER_DIR}
-#      )
+  FetchContent_GetProperties(Boost)
+  if (Boost_POPULATED)
+    message(STATUS "Found populated Boost (${BOOST_INCLUDE_LIBRARIES}): ${boost_SOURCE_DIR}")
+  else (Boost_POPULATED)
+    FetchContent_Populate(Boost)
+    add_subdirectory(${boost_SOURCE_DIR} ${boost_BINARY_DIR} EXCLUDE_FROM_ALL)
+    # workaround for cmake complaint that boost is not among exports:
     install(TARGETS boost_headers boost_math boost_assert boost_concept_check boost_config boost_core
             boost_integer boost_lexical_cast boost_predef boost_random boost_static_assert boost_throw_exception
             boost_preprocessor boost_type_traits boost_array boost_container boost_numeric_conversion boost_range
@@ -86,10 +53,7 @@ else(Boost_FOUND)
             boost_mpl boost_container_hash boost_detail boost_iterator boost_optional boost_regex boost_tuple
             boost_variant2 boost_winapi boost_smart_ptr boost_typeof boost_describe boost_mp11 boost_function_types
             boost_fusion boost_functional boost_function boost_bind
-            EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT base)
-    message(STATUS "Got Boost (${BOOST_INCLUDE_LIBRARIES}): ${Boost_SOURCE_DIR}")
-    set(Boost_FOUND TRUE)
-  else (Boost_SOURCE_DIR)
-    message(FATAL_ERROR "Failed to fetch Boost")
-  endif (Boost_SOURCE_DIR)
+            EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    message(STATUS "Got Boost (${BOOST_INCLUDE_LIBRARIES}): ${boost_SOURCE_DIR}")
+  endif(Boost_POPULATED)
 endif(Boost_FOUND)

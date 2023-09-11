@@ -51,23 +51,20 @@ else(xxHash_FOUND)
     USES_TERMINAL_BUILD ON
     USES_TERMINAL_INSTALL ON
     )
-  FetchContent_MakeAvailable(xxHash)
-  if (xxHash_SOURCE_DIR)
-    cmake_path(GET xxHash_SOURCE_DIR PARENT_PATH XXHASH_INCLUDE_DIR) # drop "cmake_unofficial"
-#    add_library(xxHash ALIAS xxHash::xxhash)
+  FetchContent_GetProperties(xxHash)
+  if (xxHash_POPULATED)
+    message(STATUS "Found populated xxHash: ${xxhash_SOURCE_DIR}")
+  else (xxHash_POPULATED)
+    FetchContent_Populate(xxHash)
+    add_subdirectory(${xxhash_SOURCE_DIR}/cmake_unofficial ${xxhash_BINARY_DIR} EXCLUDE_FROM_ALL)
     add_library(xxHash INTERFACE)
-#    set_property(TARGET xxHash APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${XXHASH_INCLUDE_DIR})
     target_compile_definitions(xxHash INTERFACE XXH_INLINE_ALL)
     target_include_directories(xxHash
             INTERFACE
-            $<BUILD_INTERFACE:${XXHASH_INCLUDE_DIR}>
+            $<BUILD_INTERFACE:${xxhash_SOURCE_DIR}>
             $<INSTALL_INTERFACE:include>
     )
-#    target_link_libraries(xxHash INTERFACE xxHash::xhash)
-    set(xxHash_FOUND TRUE)
-    message(STATUS "Got xxHash: ${XXHASH_INCLUDE_DIR}")
-  else(xxHash_SOURCE_DIR)
-    message(FATAL_ERROR "Failed to fetch xxHash")
-  endif (xxHash_SOURCE_DIR)
+    message(STATUS "Got xxHash: ${xxhash_SOURCE_DIR}")
+  endif (xxHash_POPULATED)
   # Custom config: https://github.com/untrioctium/refrakt/blob/main/CMakeLists.txt
 endif(xxHash_FOUND)
