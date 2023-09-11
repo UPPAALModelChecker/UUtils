@@ -77,4 +77,4 @@ private:
     std::unique_ptr<internalstate> s;  // pIMPL pattern
 };
 
-#endif
+#endif /* INCLUDE_BASE_RANDOM_H */
