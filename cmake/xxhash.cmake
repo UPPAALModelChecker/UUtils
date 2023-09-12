@@ -21,6 +21,7 @@ if (XXHASH_PATH)
             $<BUILD_INTERFACE:${XXHASH_INCLUDE_DIR}>
             $<INSTALL_INTERFACE:include>
     )
+    target_sources(xxHash INTERFACE FILE_SET xxhash_PUBLIC TYPE HEADERS FILES XXHASH_PATH)
   else()
     message(STATUS "Found xxHash-${XXHASH_VERSION} is too old, need at lease ${XXHASH_VERSION_MINIMUM}")
   endif()
