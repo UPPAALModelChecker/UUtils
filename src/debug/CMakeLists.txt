@@ -12,5 +12,5 @@ target_include_directories(udebug
                            )
 
 
-install(TARGETS udebug EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT udebug)
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../include/debug DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT debug)
+install(TARGETS udebug EXPORT UUtilsConfig COMPONENT udebug)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/debug DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT debug)

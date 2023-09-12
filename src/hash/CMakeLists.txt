@@ -8,7 +8,5 @@ target_include_directories(hash
                             $<INSTALL_INTERFACE:include>
                            )
 
-
-install(TARGETS hash xxHash EXPORT UUtilsConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        FILE_SET xxhash_PUBLIC DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT hash)
+install(TARGETS hash xxHash EXPORT UUtilsConfig FILE_SET xxhash_headers COMPONENT hash)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/hash DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT hash)
