@@ -13,77 +13,80 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Format
+      - name: Formatting
         run: find src include test -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
   build-linux:
     runs-on: ubuntu-latest
     env:
+      TARGET: x86_64-linux
       CMAKE_GENERATOR: Ninja
       CMAKE_BUILD_TYPE: Debug
-      BUILD_DIR: build-linux64-debug
-      BUILD_LIBS_DIR: build-linux64-libs-debug
+      BUILD_DIR: build-${{ env.TARGET }}-debug
+      BUILD_LIBS_DIR: build-${{ env.TARGET }}-libs-debug
     steps:
       - uses: actions/checkout@v3
       - name: Install compiler tools
         run: |
-          sudo apt-get -y update
-          sudo apt-get -y install cmake ninja-build
+          sudo apt-get -qy update
+          sudo apt-get -qy install cmake ninja-build
       - name: Build without getlibs
         run: |
           export CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-          cmake -S . -B $BUILD_DIR -DUBSAN=ON
-          cmake --build $BUILD_DIR --config $CMAKE_BUILD_TYPE
-          (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+          cmake -S . -B "$BUILD_DIR" -DUBSAN=ON
+          cmake --build "$BUILD_DIR" --config $CMAKE_BUILD_TYPE
+          (cd "$BUILD_DIR" && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
       - name: Get dependencies
         run: |
-          CMAKE_BUILD_TYPE=Release ./getlibs.sh linux64
+          CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
       - name: Build with getlibs
         run: |
           export CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$PWD/libs-linux64" -DUBSAN=ON -DFIND_FATAL=ON
-          cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
-          (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+          cmake -S . -B "$BUILD_LIBS_DIR" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DUBSAN=ON -DFIND_FATAL=ON
+          cmake --build "$BUILD_LIBS_DIR" --config $CMAKE_BUILD_TYPE
+          (cd "$BUILD_LIBS_DIR" && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
   build-win:
     runs-on: ubuntu-latest
     env:
+      TARGET: x86_64-w64-mingw32
       WINARCH: win64
       CMAKE_GENERATOR: Ninja
       CMAKE_BUILD_TYPE: Debug
-      CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/toolchains/mingw.cmake
-      BUILD_DIR: build-win64-debug
-      BUILD_LIBS_DIR: build-win64-libs-debug
+      CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/cmake/toolchain/${{ env.TARGET }}.cmake
+      BUILD_DIR: build-${{ env.TARGET }}-debug
+      BUILD_LIBS_DIR: build-${{ env.TARGET }}-libs-debug
     steps:
       - uses: actions/checkout@v3
       - name: Install cross-compiler tools
         run: |
-          sudo apt-get -y update
-          sudo apt-get -y install cmake ninja-build g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools wine wine-binfmt
+          sudo apt-get -qy update
+          sudo apt-get -qy install cmake ninja-build g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools wine wine-binfmt
           sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
       - name: Build without getlibs
         run: |
-          export WINEPATH=$("$PWD/mingw-winepath.sh")
+          export WINEPATH=$("$PWD/winepath-for" $TARGET)
           export CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-          cmake -S . -B $BUILD_DIR
-          cmake --build $BUILD_DIR --config $CMAKE_BUILD_TYPE
-          (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+          cmake -S . -B "$BUILD_DIR"
+          cmake --build "$BUILD_DIR" --config $CMAKE_BUILD_TYPE
+          (cd "$BUILD_DIR" && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
       - name: Get dependencies
         run: |
-          CMAKE_BUILD_TYPE=Release CMAKE_TOOLCHAIN_FILE="$PWD/toolchains/mingw.cmake" ./getlibs.sh win64
+          CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
       - name: Build with getlibs
         run: |
-          export WINEPATH=$("$PWD/mingw-winepath.sh")
+          export WINEPATH=$("$PWD/winepath-for" $TARGET)
           export CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$PWD/libs-win64" -DFIND_FATAL=ON
-          cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
-          (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+          cmake -S . -B "$BUILD_LIBS_DIR" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
+          cmake --build "$BUILD_LIBS_DIR" --config $CMAKE_BUILD_TYPE
+          (cd "$BUILD_LIBS_DIR" && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
   build-macos:
     runs-on: macos-latest
     env:
+      TARGET: x86_64-darwin
       CMAKE_GENERATOR: Ninja
       CMAKE_BUILD_TYPE: Debug
-      BUILD_DIR: build-macos64-debug
-      BUILD_LIBS_DIR: build-macos64-libs-debug
+      BUILD_DIR: build-${{ env.TARGET }}-debug
+      BUILD_LIBS_DIR: build-${{ env.TARGET }}-libs-debug
     steps:
       - uses: actions/checkout@v3
       - name: Install Ninja
@@ -92,15 +95,15 @@ jobs:
       - name: Build without getlibs
         run: |
           export CMAKE_BUILD_PARALLEL_LEVEL=$(sysctl -n hw.ncpu)
-          cmake -S . -B $BUILD_DIR
-          cmake --build $BUILD_DIR --config $CMAKE_BUILD_TYPE
-          (cd $BUILD_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+          cmake -S . -B "$BUILD_DIR"
+          cmake --build "$BUILD_DIR" --config $CMAKE_BUILD_TYPE
+          (cd "$BUILD_DIR" && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
       - name: Get dependencies
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh macos64
       - name: Build with getlibs
         run: |
           export CMAKE_BUILD_PARALLEL_LEVEL=$(sysctl -n hw.ncpu)
-          cmake -S . -B $BUILD_LIBS_DIR -DCMAKE_PREFIX_PATH="$PWD/libs-macos64" -DFIND_FATAL=ON
-          cmake --build $BUILD_LIBS_DIR --config $CMAKE_BUILD_TYPE
-          (cd $BUILD_LIBS_DIR && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+          cmake -S . -B "$BUILD_LIBS_DIR" -DCMAKE_PREFIX_PATH="$PWD/local/macos64" -DFIND_FATAL=ON
+          cmake --build "$BUILD_LIBS_DIR" --config $CMAKE_BUILD_TYPE
+          (cd "$BUILD_LIBS_DIR" && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
