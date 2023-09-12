@@ -100,10 +100,10 @@ jobs:
           (cd "$BUILD_DIR" && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
       - name: Get dependencies
         run: |
-          CMAKE_BUILD_TYPE=Release ./getlibs.sh macos64
+          CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
       - name: Build with getlibs
         run: |
           export CMAKE_BUILD_PARALLEL_LEVEL=$(sysctl -n hw.ncpu)
-          cmake -S . -B "$BUILD_LIBS_DIR" -DCMAKE_PREFIX_PATH="$PWD/local/macos64" -DFIND_FATAL=ON
+          cmake -S . -B "$BUILD_LIBS_DIR" -DCMAKE_PREFIX_PATH="$PWD/local/x86_64-darwin" -DFIND_FATAL=ON
           cmake --build "$BUILD_LIBS_DIR" --config $CMAKE_BUILD_TYPE
           (cd "$BUILD_LIBS_DIR" && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
