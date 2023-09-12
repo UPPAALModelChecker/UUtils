@@ -16,11 +16,7 @@ if (XXHASH_PATH)
     cmake_path(GET XXHASH_PATH PARENT_PATH XXHASH_INCLUDE_DIR)
     add_library(xxHash INTERFACE)
     target_compile_definitions(xxHash INTERFACE XXH_INLINE_ALL)
-    target_include_directories(xxHash
-            INTERFACE
-            $<BUILD_INTERFACE:${XXHASH_INCLUDE_DIR}>
-            $<INSTALL_INTERFACE:include>
-    )
+    target_sources(xxHash INTERFACE FILE_SET xxhash_headers TYPE HEADERS BASE_DIRS ${XXHASH_INCLUDE_DIR} FILES ${XXHASH_PATH})
   else()
     message(STATUS "Found xxHash-${XXHASH_VERSION} is too old, need at lease ${XXHASH_VERSION_MINIMUM}")
   endif()
@@ -52,19 +48,14 @@ else(xxHash_FOUND)
     USES_TERMINAL_INSTALL ON
     )
   FetchContent_GetProperties(xxHash)
-  if (xxHash_POPULATED)
+  if (xxhash_POPULATED)
     message(STATUS "Found populated xxHash: ${xxhash_SOURCE_DIR}")
-  else (xxHash_POPULATED)
+  else (xxhash_POPULATED)
     FetchContent_Populate(xxHash)
     add_subdirectory(${xxhash_SOURCE_DIR}/cmake_unofficial ${xxhash_BINARY_DIR} EXCLUDE_FROM_ALL)
     add_library(xxHash INTERFACE)
     target_compile_definitions(xxHash INTERFACE XXH_INLINE_ALL)
-    target_include_directories(xxHash
-            INTERFACE
-            $<BUILD_INTERFACE:${xxhash_SOURCE_DIR}>
-            $<INSTALL_INTERFACE:include>
-    )
+    target_sources(xxHash INTERFACE FILE_SET xxhash_headers TYPE HEADERS BASE_DIRS ${xxhash_SOURCE_DIR} FILES ${xxhash_SOURCE_DIR}/xxhash.h)
     message(STATUS "Got xxHash: ${xxhash_SOURCE_DIR}")
-  endif (xxHash_POPULATED)
-  # Custom config: https://github.com/untrioctium/refrakt/blob/main/CMakeLists.txt
+  endif (xxhash_POPULATED)
 endif(xxHash_FOUND)

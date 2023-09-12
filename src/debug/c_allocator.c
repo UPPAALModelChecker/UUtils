@@ -11,9 +11,8 @@
  *
  *********************************************************************/
 
-#include "debug/c_allocator.h"
-
-#include "debug/macros.h"
+#include <debug/c_allocator.h>
+#include <debug/macros.h>
 
 #include <assert.h>
 #include <stdio.h>

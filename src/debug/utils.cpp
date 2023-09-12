@@ -14,9 +14,9 @@
  *
  **********************************************************************/
 
-#include "base/file_stream.hpp"
-#include "base/bitstring.h"
-#include "debug/macros.h"
+#include <base/file_stream.hpp>
+#include <base/bitstring.h>
+#include <debug/macros.h>
 
 #include <cstdlib>
 #include <cstring>

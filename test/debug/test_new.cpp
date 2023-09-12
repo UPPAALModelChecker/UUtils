@@ -19,15 +19,15 @@
 
 // Should be tested with and without -DNO_NEW_MONITOR
 
-#include <iostream>
-#include <new>
-#include <stdlib.h>
-
 //#define NNEW_INFO
 //#define NDELETE_INFO
 
-#include "debug/macros.h"
-#include "debug/new.h"
+#include <debug/macros.h>
+//#include "debug/new.h"
+
+#include <iostream>
+#include <new>
+#include <stdlib.h>
 
 class CFoo
 {

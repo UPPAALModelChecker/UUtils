@@ -1,5 +1,5 @@
 add_executable(test_new test_new.cpp)
-#target_link_libraries(test_new PRIVATE base udebug doctest::doctest)
+target_link_libraries(test_new PRIVATE udebug)
 add_test(NAME debug_new_0 COMMAND test_new 0)
 add_test(NAME debug_new_1 COMMAND test_new 1)
 add_test(NAME debug_new_2 COMMAND test_new 2) # failing test: L64-debug
