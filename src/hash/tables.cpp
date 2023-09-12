@@ -11,20 +11,22 @@
 //
 ///////////////////////////////////////////////////////////////////
 
-#ifndef NDEBUG
-//#include <base/array_t.h>
-
-//#include <iostream>
-#endif
+// Local debugging: use -DSHOWS_STATS
+//#define SHOW_STATS
 
 #include <hash/tables.h>
-//#include <debug/macros.h>
+#ifdef SHOW_STATS
+#include <debug/macros.h>
+#ifndef NDEBUG
+#include <base/array_t.h>
+
+#include <iostream>
+#endif /* NOT NDEBUG */
+#endif /* SHOW_STATS */
 
 using namespace base;
 
 namespace uhash {
-// Local debugging: use -DSHOWS_STATS
-// #define SHOW_STATS
 
 #if defined(SHOW_STATS) && !defined(NDEBUG)
 #define HASHDEBUG(x) x
