@@ -249,11 +249,11 @@ void chi_squared_test(const std::vector<step_t>& hist, CumFn&& expected, const d
 
 std::vector<step_t> normalize(std::vector<step_t> hist)
 {
-    auto total = std::accumulate(std::begin(hist), std::end(hist), size_t{0u},
-                                 [](size_t init, const step_t step) { return init + step.value; });
+    auto total = std::accumulate(std::begin(hist), std::end(hist), double{0},
+                                 [](double init, const step_t step) { return init + step.value; });
     for (auto& step : hist)
         step.value /= total;
-    return std::move(hist);
+    return hist;
 }
 
 auto rng = RandomGenerator();
