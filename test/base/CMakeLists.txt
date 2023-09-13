@@ -142,6 +142,8 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
       base_allocator_30000 # segfault
       base_array_10_0 # strange output
       base_array_10_1 # assertion fail as expected
+      base_array_10_2 # assertion fail as expected
+      base_array_10_3 # assertion fail as expected
       base_bit_string # assertion fail
       # base_crash_allocator_0 # passes correctly!
       base_crash_allocator_1
