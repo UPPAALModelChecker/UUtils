@@ -124,14 +124,14 @@ jobs:
           cmake --build build-x86_64-windows --config Debug
           cd build-x86_64-windows
           ctest -C Debug
-#      - name: Get dependencies
-#        run: |
-#          vcpkg integrate install
-#          vcpkg install doctest --triplet x64-windows
-#          bash CMAKE_BUILD_TYPE=Release ./getlibs.sh x86_64-w64-mingw32
-#      - name: Build with getlibs
-#        run: |
-#          cmake -S . -B %BUILD_LIBS_DIR% -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
-#          cmake --build %BUILD_LIBS_DIR% --config %CMAKE_BUILD_TYPE%
-#          cd %BUILD_LIBS_DIR%
-#          ctest -C %CMAKE_BUILD_TYPE%
+      - name: Get dependencies
+        run: |
+          vcpkg integrate install
+          vcpkg install doctest --triplet x64-windows
+          bash CMAKE_BUILD_TYPE=Release ./getlibs.sh x86_64-w64-mingw32
+      - name: Build with getlibs
+        run: |
+          cmake -S . -B %BUILD_LIBS_DIR% -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
+          cmake --build %BUILD_LIBS_DIR% --config %CMAKE_BUILD_TYPE%
+          cd %BUILD_LIBS_DIR%
+          ctest -C %CMAKE_BUILD_TYPE%

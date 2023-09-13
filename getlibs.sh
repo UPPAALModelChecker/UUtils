@@ -45,7 +45,7 @@ for target in $targets ; do
     else
         pushd "$SOURCES"
         if [ ! -r "${ARCHIVE}" ]; then
-            wget -nv "https://github.com/Cyan4973/xxHash/archive/refs/tags/v$VERSION.tar.gz" -cO "${ARCHIVE}"
+            curl -sL "https://github.com/Cyan4973/xxHash/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
         fi
         if [ ! -d "$SOURCE" ] ; then
             tar xf "${ARCHIVE}"
@@ -75,8 +75,8 @@ for target in $targets ; do
     else
         pushd "$SOURCES"
         if [ ! -r "${ARCHIVE}" ]; then
-            # wget "https://github.com/boostorg/boost/releases/download/$LIBRARY/$LIBRARY.tar.xz" -cO "${ARCHIVE}"
-            wget -nv "https://people.cs.aau.dk/~marius/mirrors/boost/${ARCHIVE}" -cO "${ARCHIVE}"
+            # curl -sL "https://github.com/boostorg/boost/releases/download/$LIBRARY/$LIBRARY.tar.xz" -o "${ARCHIVE}"
+            curl -sL "https://people.cs.aau.dk/~marius/mirrors/boost/${ARCHIVE}" -o "${ARCHIVE}"
         fi
         if [ ! -d "${SOURCE}" ]; then
             tar xf "${ARCHIVE}"
@@ -109,7 +109,7 @@ for target in $targets ; do
     else
         pushd "${SOURCES}"
         if [ ! -r "${ARCHIVE}" ]; then
-            wget -nv "https://github.com/doctest/doctest/archive/refs/tags/v$VERSION.tar.gz" -cO "${ARCHIVE}"
+            curl -sL "https://github.com/doctest/doctest/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
         fi
         if [ ! -d "${SOURCE}" ]; then
             tar xf "${ARCHIVE}"
@@ -139,7 +139,7 @@ for target in $targets ; do
     else
         pushd "$SOURCES"
         if [ ! -r "$ARCHIVE" ]; then
-            wget -nv "https://github.com/google/benchmark/archive/refs/tags/v${VERSION}.tar.gz" -cO "$ARCHIVE"
+            curl -sL "https://github.com/google/benchmark/archive/refs/tags/v${VERSION}.tar.gz" -o "$ARCHIVE"
         fi
         if [ ! -d "$LIBRARY" ]; then
             tar -xf "$ARCHIVE"
