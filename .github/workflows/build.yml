@@ -107,3 +107,29 @@ jobs:
           cmake -S . -B "$BUILD_LIBS_DIR" -DCMAKE_PREFIX_PATH="$PWD/local/x86_64-darwin" -DFIND_FATAL=ON
           cmake --build "$BUILD_LIBS_DIR" --config $CMAKE_BUILD_TYPE
           (cd "$BUILD_LIBS_DIR" && ctest -C $CMAKE_BUILD_TYPE --output-on-failure)
+  build-windows:
+    runs-on: windows-latest
+    env:
+      CMAKE_TOOLCHAIN_FILE: C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+      CMAKE_BUILD_TYPE: Debug
+      STATIC: ON
+      CTEST_OUTPUT_ON_FAILURE: 1
+      BUILD_DIR: build-x86_64-windows-debug
+      BUILD_LIBS_DIR: build-x86_64-windows-libs-debug
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build without getlibs
+        run: |
+          cmake -S . -B %BUILD_DIR%
+          cmake --build %BUILD_DIR% --config %CMAKE_BUILD_TYPE%
+          (cd %BUILD_DIR% ; ctest -C %CMAKE_BUILD_TYPE%)
+      - name: Get dependencies
+        run: |
+          vcpkg integrate install
+          vcpkg install doctest --triplet x64-windows
+          bash ./getlibs.sh x86_64-w64-mingw32
+      - name: Build with getlibs
+        run: |
+          cmake -S . -B %BUILD_LIBS_DIR% -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
+          cmake --build %BUILD_LIBS_DIR% --config %CMAKE_BUILD_TYPE%
+          (cd %BUILD_LIBS_DIR% ; ctest -C %CMAKE_BUILD_TYPE%)
