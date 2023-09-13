@@ -44,12 +44,8 @@ for target in $targets ; do
         echo "$LIBRARY is already installed in $CMAKE_INSTALL_PREFIX"
     else
         pushd "$SOURCES"
-        if [ ! -r "${ARCHIVE}" ]; then
-            curl -sL "https://github.com/Cyan4973/xxHash/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
-        fi
-        if [ ! -d "$SOURCE" ] ; then
-            tar xf "${ARCHIVE}"
-        fi
+        [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/Cyan4973/xxHash/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
+        [ -d "$SOURCE" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
         echo "  CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE:-(unset)}"
@@ -74,13 +70,9 @@ for target in $targets ; do
         echo "$LIBRARY is already installed in $CMAKE_INSTALL_PREFIX"
     else
         pushd "$SOURCES"
-        if [ ! -r "${ARCHIVE}" ]; then
-            # curl -sL "https://github.com/boostorg/boost/releases/download/$LIBRARY/$LIBRARY.tar.xz" -o "${ARCHIVE}"
-            curl -sL "https://people.cs.aau.dk/~marius/mirrors/boost/${ARCHIVE}" -o "${ARCHIVE}"
-        fi
-        if [ ! -d "${SOURCE}" ]; then
-            tar xf "${ARCHIVE}"
-        fi
+        #[ -r "${ARCHIVE}" ] || curl -sL "https://github.com/boostorg/boost/releases/download/$LIBRARY/$LIBRARY.tar.xz" -o "${ARCHIVE}"
+        [ -r "${ARCHIVE}" ] || curl -sL "https://people.cs.aau.dk/~marius/mirrors/boost/${ARCHIVE}" -o "${ARCHIVE}"
+        [ -d "${SOURCE}" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
         echo "  CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE:-(unset)}"
@@ -108,12 +100,8 @@ for target in $targets ; do
         echo "$LIBRARY is already installed in $CMAKE_INSTALL_PREFIX"
     else
         pushd "${SOURCES}"
-        if [ ! -r "${ARCHIVE}" ]; then
-            curl -sL "https://github.com/doctest/doctest/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
-        fi
-        if [ ! -d "${SOURCE}" ]; then
-            tar xf "${ARCHIVE}"
-        fi
+        [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/doctest/doctest/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
+        [ -d "${SOURCE}" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
         echo "  CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE:-(unset)}"
@@ -138,16 +126,8 @@ for target in $targets ; do
         echo "$LIBRARY is already installed in $CMAKE_INSTALL_PREFIX"
     else
         pushd "$SOURCES"
-        if [ ! -r "$ARCHIVE" ]; then
-            curl -sL "https://github.com/google/benchmark/archive/refs/tags/v${VERSION}.tar.gz" -o "$ARCHIVE"
-        fi
-        if [ ! -d "$LIBRARY" ]; then
-            tar -xf "$ARCHIVE"
-        fi
-        #if [ ! -d "$SOURCE" ]; then
-        #   git clone -b main --no-tags --single-branch --depth 1 https://github.com/google/benchmark.git "${SOURCE}"
-        #   (cd $SOURCE ; git checkout "v${VERSION}")
-        #fi
+        [ -r "$ARCHIVE" ] || curl -sL "https://github.com/google/benchmark/archive/refs/tags/v${VERSION}.tar.gz" -o "$ARCHIVE"
+        [ -d "$LIBRARY" ] || tar -xf "$ARCHIVE"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
         echo "  CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE:-(unset)}"
