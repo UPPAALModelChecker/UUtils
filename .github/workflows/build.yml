@@ -120,10 +120,12 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build without getlibs
         run: |
+          echo "Building"
           cmake -S . -B build-x86_64-windows
           cmake --build build-x86_64-windows --config Debug
+          echo "Testing"          
           cd build-x86_64-windows
-          ctest -C Debug
+          ctest -C Debug --timeout 20
       - name: Get dependencies
         run: |
           vcpkg integrate install
@@ -131,7 +133,9 @@ jobs:
           bash CMAKE_BUILD_TYPE=Release ./getlibs.sh x86_64-w64-mingw32
       - name: Build with getlibs
         run: |
-          cmake -S . -B %BUILD_LIBS_DIR% -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
-          cmake --build %BUILD_LIBS_DIR% --config %CMAKE_BUILD_TYPE%
-          cd %BUILD_LIBS_DIR%
-          ctest -C %CMAKE_BUILD_TYPE%
+          echo "Building"
+          cmake -S . -B build-x86_64-windows-libs-debug -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
+          cmake --build build-x86_64-windows-libs-debug --config Debug
+          echo "Testing"
+          cd build-x86_64-windows-libs-debug
+          ctest -C Debug --timeout 20
