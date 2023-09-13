@@ -13,7 +13,7 @@
 #include <random>
 #include <cmath>
 
-static double fracInRange(const int* values, int length, double from, double till)
+static double fracInRange(const std::vector<int>& values, int length, double from, double till)
 {
     double count = 0;
     for (int i = 0; i < length; ++i)
@@ -29,7 +29,7 @@ using boost::math::quantile;
 using std::cout;
 using std::endl;
 
-static bool frequency_analysis(int n, int values[], int range, double alpha)
+static bool frequency_analysis(int n, const std::vector<int>& values, int range, double alpha)
 {
     const auto sqrt_n = std::sqrt(n);
     auto sum = 0., sumsq = 0.;
@@ -106,11 +106,8 @@ static bool frequency_analysis(int n, int values[], int range, double alpha)
 /** returns true if passed, otherwise false. */
 static bool floating_point_test(int n, int range, int offset, double alpha)
 {
-    int values[range];
-    for (int i = 0; i < range; ++i)
-        values[i] = 0;
-    RandomGenerator rand;
-
+    auto values = std::vector<int>(range, 0);
+    auto rand = RandomGenerator{};
     rand.seed((uint32_t)time(nullptr));
     cout << "_________________________________________" << endl;
     cout << "Random FLOATING POINT number test" << endl;
@@ -132,13 +129,9 @@ static bool floating_point_test(int n, int range, int offset, double alpha)
 /** returns true if passed, otherwise false. */
 static bool integer_test(int n, int range, int offset, double alpha)
 {
-    int values[range];
-    for (int i = 0; i < range; ++i)
-        values[i] = 0;
-    RandomGenerator rand;
-
+    auto values = std::vector<int>(range, 0);
+    auto rand = RandomGenerator{};
     rand.seed((uint32_t)time(nullptr));
-
     cout << "_________________________________________" << endl;
     cout << "Random INTEGER test" << endl;
     cout << "Generating " << (n * range) << " random numbers from a range of " << range << "... ";
