@@ -317,7 +317,7 @@ void debug_generateBits(uint32_t* bits, size_t bitSize, size_t nbits, bool bit1)
     }
 
     for (i = 0; i < bitSize; ++i) {
-        uint32_t x = RAND() | bit1;
+        uint32_t x = RAND() | static_cast<uint32_t>(bit1);
         size_t n = base_countBits(x);
 
         if (n > nbits) {

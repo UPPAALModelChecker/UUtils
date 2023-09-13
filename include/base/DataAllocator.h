@@ -110,11 +110,7 @@ public:
     /** C wrapper allocator
      * @return C wrapper allocator_t
      */
-    allocator_t getCAllocator()
-    {
-        allocator_t c_alloc = {.allocData = this, .allocFunction = base_allocate, .deallocFunction = base_deallocate};
-        return c_alloc;
-    }
+    allocator_t getCAllocator() { return allocator_t{this, base_allocate, base_deallocate}; }
 
 private:
     /** Memory is allocated internally by

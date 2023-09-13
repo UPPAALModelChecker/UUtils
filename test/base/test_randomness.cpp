@@ -13,7 +13,7 @@
 #include <random>
 #include <cmath>
 
-static double fracInRange(const int* values, int length, double from, double till)
+static double fracInRange(const std::vector<int>& values, int length, double from, double till)
 {
     double count = 0;
     for (int i = 0; i < length; ++i)
@@ -29,7 +29,7 @@ using boost::math::quantile;
 using std::cout;
 using std::endl;
 
-static bool frequency_analysis(int n, int values[], int range, double alpha)
+static bool frequency_analysis(int n, const std::vector<int>& values, int range, double alpha)
 {
     const auto sqrt_n = std::sqrt(n);
     auto sum = 0., sumsq = 0.;
@@ -106,11 +106,8 @@ static bool frequency_analysis(int n, int values[], int range, double alpha)
 /** returns true if passed, otherwise false. */
 static bool floating_point_test(int n, int range, int offset, double alpha)
 {
-    int values[range];
-    for (int i = 0; i < range; ++i)
-        values[i] = 0;
-    RandomGenerator rand;
-
+    auto values = std::vector<int>(range, 0);
+    auto rand = RandomGenerator{};
     rand.seed((uint32_t)time(nullptr));
     cout << "_________________________________________" << endl;
     cout << "Random FLOATING POINT number test" << endl;
@@ -132,13 +129,9 @@ static bool floating_point_test(int n, int range, int offset, double alpha)
 /** returns true if passed, otherwise false. */
 static bool integer_test(int n, int range, int offset, double alpha)
 {
-    int values[range];
-    for (int i = 0; i < range; ++i)
-        values[i] = 0;
-    RandomGenerator rand;
-
+    auto values = std::vector<int>(range, 0);
+    auto rand = RandomGenerator{};
     rand.seed((uint32_t)time(nullptr));
-
     cout << "_________________________________________" << endl;
     cout << "Random INTEGER test" << endl;
     cout << "Generating " << (n * range) << " random numbers from a range of " << range << "... ";
@@ -256,11 +249,11 @@ void chi_squared_test(const std::vector<step_t>& hist, CumFn&& expected, const d
 
 std::vector<step_t> normalize(std::vector<step_t> hist)
 {
-    auto total = std::accumulate(std::begin(hist), std::end(hist), size_t{0u},
-                                 [](size_t init, const step_t step) { return init + step.value; });
+    auto total = std::accumulate(std::begin(hist), std::end(hist), double{0},
+                                 [](double init, const step_t step) { return init + step.value; });
     for (auto& step : hist)
         step.value /= total;
-    return std::move(hist);
+    return hist;
 }
 
 auto rng = RandomGenerator();
