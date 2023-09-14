@@ -70,8 +70,7 @@ for target in $targets ; do
         echo "$LIBRARY is already installed in $CMAKE_INSTALL_PREFIX"
     else
         pushd "$SOURCES"
-        #[ -r "${ARCHIVE}" ] || curl -sL "https://github.com/boostorg/boost/releases/download/$LIBRARY/$LIBRARY.tar.xz" -o "${ARCHIVE}"
-        [ -r "${ARCHIVE}" ] || curl -sL "https://people.cs.aau.dk/~marius/mirrors/boost/${ARCHIVE}" -o "${ARCHIVE}"
+        [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/boostorg/boost/releases/download/$LIBRARY/$LIBRARY.tar.xz" -o "${ARCHIVE}"
         [ -d "${SOURCE}" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
