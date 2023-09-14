@@ -38,6 +38,7 @@ for target in $targets ; do
     VERSION=0.8.2
     LIBRARY="${NAME}-${VERSION}"
     ARCHIVE="$LIBRARY.tgz"
+    SHA256=baee0c6afd4f03165de7a4e67988d16f0f2b257b51d0e3cb91909302a26a79c4
     SOURCE="${SOURCES}/$LIBRARY"
     BUILD="${PREFIX}/build-$LIBRARY"
     if [ -r "${CMAKE_INSTALL_PREFIX}/include/xxhash.h" ]; then
@@ -45,6 +46,7 @@ for target in $targets ; do
     else
         pushd "$SOURCES"
         [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/Cyan4973/xxHash/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
+        if [ -n "$(command -v sha256sum)" ]; then echo "$SHA256 $ARCHIVE" | sha256sum --check ; fi
         [ -d "$SOURCE" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
@@ -64,6 +66,7 @@ for target in $targets ; do
     VERSION=1.83.0
     LIBRARY="${NAME}-${VERSION}"
     ARCHIVE="$LIBRARY.tar.xz"
+    SHA256=c5a0688e1f0c05f354bbd0b32244d36085d9ffc9f932e8a18983a9908096f614
     SOURCE="${SOURCES}/$LIBRARY"
     BUILD="${PREFIX}/build-$LIBRARY"
     if [ -r "${CMAKE_INSTALL_PREFIX}/include/boost/math/distributions/arcsine.hpp" ] ; then
@@ -71,6 +74,7 @@ for target in $targets ; do
     else
         pushd "$SOURCES"
         [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/boostorg/boost/releases/download/$LIBRARY/$LIBRARY.tar.xz" -o "${ARCHIVE}"
+        if [ -n "$(command -v sha256sum)" ]; then echo "$SHA256 $ARCHIVE" | sha256sum --check ; fi
         [ -d "${SOURCE}" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
@@ -93,6 +97,7 @@ for target in $targets ; do
     VERSION=2.4.11
     LIBRARY="${NAME}-${VERSION}"
     ARCHIVE="$LIBRARY.tgz"
+    SHA256=632ed2c05a7f53fa961381497bf8069093f0d6628c5f26286161fbd32a560186
     SOURCE="${SOURCES}/$LIBRARY"
     BUILD="${PREFIX}/build-$LIBRARY"
     if [ -r "${CMAKE_INSTALL_PREFIX}/include/doctest/doctest.h" ]; then
@@ -100,6 +105,7 @@ for target in $targets ; do
     else
         pushd "${SOURCES}"
         [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/doctest/doctest/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
+        if [ -n "$(command -v sha256sum)" ]; then echo "$SHA256 $ARCHIVE" | sha256sum --check ; fi
         [ -d "${SOURCE}" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
@@ -119,6 +125,7 @@ for target in $targets ; do
     VERSION=1.8.3 # v1.8.2 fails with "-lrt not found" on win64
     LIBRARY="${NAME}-${VERSION}"
     ARCHIVE="${LIBRARY}.tar.gz"
+    SHA256=6bc180a57d23d4d9515519f92b0c83d61b05b5bab188961f36ac7b06b0d9e9ce
     SOURCE="${SOURCES}/${LIBRARY}"
     BUILD="${PREFIX}/build-${LIBRARY}"
     if [ -r "${CMAKE_INSTALL_PREFIX}/include/benchmark/benchmark.h" ] ; then
@@ -126,6 +133,7 @@ for target in $targets ; do
     else
         pushd "$SOURCES"
         [ -r "$ARCHIVE" ] || curl -sL "https://github.com/google/benchmark/archive/refs/tags/v${VERSION}.tar.gz" -o "$ARCHIVE"
+        if [ -n "$(command -v sha256sum)" ]; then echo "$SHA256 $ARCHIVE" | sha256sum --check ; fi
         [ -d "$LIBRARY" ] || tar -xf "$ARCHIVE"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
