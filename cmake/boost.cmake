@@ -27,8 +27,7 @@ else(Boost_FOUND)
     Boost
     DOWNLOAD_EXTRACT_TIMESTAMP ON
     #FIND_PACKAGE_ARGS NAMES Boost COMPONENTS ${BOOST_INCLUDE_LIBRARIES}
-    URL https://people.cs.aau.dk/~marius/mirrors/boost/boost-1.83.0.tar.xz
-    # URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
+    URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
     URL_HASH SHA256=c5a0688e1f0c05f354bbd0b32244d36085d9ffc9f932e8a18983a9908096f614
     # GIT_REPOSITORY https://github.com/boostorg/boost.git
     # GIT_TAG boost-${Boost_VERSION}
