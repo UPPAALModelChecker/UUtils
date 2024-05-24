@@ -3,9 +3,9 @@ add_library(base STATIC bitstring.c c_allocator.c doubles.c platform.c DataAlloc
 add_library(UUtils::base ALIAS base)
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
-    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash Boost::headers Boost::math iphlpapi psapi)
+    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash Boost::math iphlpapi psapi)
 else()
-    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash Boost::headers Boost::math)
+    target_link_libraries(base PUBLIC hash PRIVATE udebug xxHash Boost::math)
 endif()
 
 target_include_directories(base
