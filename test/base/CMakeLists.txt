@@ -50,7 +50,7 @@ add_test(NAME base_item_allocator_10 COMMAND test_item_allocator 10)
 add_test(NAME base_item_allocator_100000 COMMAND test_item_allocator 100000)
 
 add_executable(test_meta test_meta.cpp)
-target_link_libraries(test_meta PRIVATE base)
+target_link_libraries(test_meta PRIVATE base doctest_with_main)
 add_test(NAME base_meta COMMAND test_meta)
 
 add_executable(test_random test_random.cpp)
