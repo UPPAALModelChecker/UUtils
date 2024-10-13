@@ -7,7 +7,7 @@ set(Boost_USE_RELEASE_LIBS   ON)  # only find release libs
 set(Boost_USE_STATIC_RUNTIME ON) # Mac insists on ON for boost_program_options
 #set(BOOST_USE_MULTITHREADED ON)
 #set(Boost_DEBUG ON)
-set(Boost_VERSION 1.83.0)
+set(Boost_VERSION 1.86.0)
 
 if (BOOST_INCLUDE_LIBRARIES)
   find_package(Boost ${Boost_VERSION} COMPONENTS ${BOOST_INCLUDE_LIBRARIES} QUIET PATHS /usr)
