@@ -5,6 +5,8 @@
 #include <memory>
 #include <array>
 #include <vector>
+#include <string>
+#include <string_view>
 #include <list>
 #include <deque>
 
@@ -72,8 +74,8 @@ TEST_CASE("meta predicates (type functions)")
     static_assert(is_container_v<std::vector<double>>, "vector of double is a container");
     static_assert(is_container_v<std::vector<std::string>>, "vector of std::string is a container");
     static_assert(is_container_v<std::initializer_list<int>>, "initializer list of int is a container");
-    static_assert(is_container_v<std::list<int>>, "initializer list of int is a container");
-    static_assert(is_container_v<std::deque<int>>, "initializer list of int is a container");
+    static_assert(is_container_v<std::list<int>>, "list of int is a container");
+    static_assert(is_container_v<std::deque<int>>, "deque of int is a container");
     static_assert(is_container_v<std::string>, "string is a container");
     static_assert(is_container_v<std::string_view>, "string_view is a container");
     static_assert(is_container_v<char* [2]>, "array of pointers to char is a container");
