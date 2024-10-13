@@ -19,11 +19,11 @@
 
 // Should be tested with and without -DNO_NEW_MONITOR
 
-//#define NNEW_INFO
-//#define NDELETE_INFO
+// #define NNEW_INFO
+// #define NDELETE_INFO
 
 #include <debug/macros.h>
-//#include "debug/new.h"
+// #include "debug/new.h"
 
 #include <iostream>
 #include <new>
@@ -132,19 +132,19 @@ static void testcrash()
         delete (a + (rand() & 1));
     }
     if (rand() & 1) {
-        delete[](b + (rand() & 1));
+        delete[] (b + (rand() & 1));
     }
     if (rand() & 1) {
         delete (c + (rand() & 1));
     }
     if (rand() & 1) {
-        delete[](d + (rand() & 1));
+        delete[] (d + (rand() & 1));
     }
     if (rand() & 1) {
         delete (e + (rand() & 1));
     }
     if (rand() & 1) {
-        delete[](f + (rand() & 1));
+        delete[] (f + (rand() & 1));
     }
 
 #ifdef NNEW_INFO

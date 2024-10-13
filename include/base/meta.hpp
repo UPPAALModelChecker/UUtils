@@ -21,34 +21,54 @@
 #include <type_traits>
 
 namespace meta {
-/** true if T is bool (or a reference to it) */
-template <typename T>
-struct is_bool : std::is_same<std::remove_cv_t<std::remove_reference_t<T>>, bool>
+/// true if T is bool (or a reference to it)
+template <typename T, typename TT = std::remove_cv_t<std::remove_reference_t<T>>>
+struct is_bool : std::is_same<TT, bool>
 {};
 
 template <typename T>
 constexpr auto is_bool_v = is_bool<T>::value;
 
-/** true if T is a number or a reference to it */
-template <typename T>
-constexpr auto is_number_v = std::is_arithmetic<std::remove_reference_t<T>>();
-
-/** true if T is a character or a reference to it */
-template <typename T,
-          typename C = std::remove_cv_t<std::remove_reference_t<T>>>  // meta-computation
-                                                                      // step
-struct is_character : std::conditional<std::is_same<C, char>::value || std::is_same<C, wchar_t>::value, std::true_type,
-                                       std::false_type>::type
+/// Same as std::conditional, except with defaults for TrueType and FalseType
+template <bool Condition, typename TrueType = std::true_type, typename FalseType = std::false_type>
+struct conditional : std::conditional<Condition, TrueType, FalseType>
 {};
 
-template <typename T>  // short hand variable:
+template <bool Condition, typename TrueType = std::true_type, typename FalseType = std::false_type>
+using conditional_t = typename conditional<Condition, TrueType, FalseType>::type;
+
+/// True if T is equal to any of Types
+template <typename T, typename... Types>
+constexpr auto is_any_of_v = (... || std::is_same_v<T, Types>);
+
+template <typename T, typename... Types>
+struct is_any_of : conditional<is_any_of_v<T, Types...>>
+{};
+
+template <typename T, typename... Types>
+using is_any_of_t = typename is_any_of<T, Types...>::type;
+
+/// true if T is a character or a reference to it
+template <typename T>
+struct is_character : is_any_of_t<std::remove_cv_t<std::remove_reference_t<T>>, char, wchar_t>
+{};
+
+template <typename T>
 constexpr auto is_character_v = is_character<T>::value;
 
-/** The element type of a container if T is a container */
-template <typename T>
-using element_type = typename std::iterator_traits<decltype(std::begin(std::declval<T&>()))>::value_type;
+/// true if T is a number or a reference to it
+template <typename T, typename TT = std::remove_cv_t<std::remove_reference_t<T>>>
+constexpr auto is_number_v = std::is_arithmetic_v<TT> && !is_bool_v<TT> && !is_character_v<TT>;
 
-/** true if T is a container or a reference to it */
+/// helper meta-function to extract the iterator type from container
+template <typename T>
+using iterator_type = decltype(std::begin(std::declval<T&>()));
+
+/// The element type of a container if T is a container
+template <typename T>
+using element_type = typename std::iterator_traits<iterator_type<T>>::value_type;
+
+/// true if T is a container or a reference to it
 template <typename,         // primary "default" template with one argument
           typename = void>  // extra argument is used in SFINAE
 struct is_container : std::false_type
@@ -61,25 +81,21 @@ struct is_container<T, std::void_t<element_type<T>>> : std::true_type
 template <typename T>
 constexpr auto is_container_v = is_container<T>::value;
 
-/** helper meta-function to extract the iterator type from container */
-template <typename T>
-using iterator_type = decltype(std::begin(std::declval<T&>()));
-
-/** true if T can be treated as a string */
+/// true if T can be treated as a string
 template <typename T, typename = void>  // primary template
-struct is_string : std::false_type
+struct is_string_cvref : std::false_type
 {};
 
 template <typename T>  // specialization for pointer types (like c-strings)
-struct is_string<T, std::enable_if<std::is_pointer<std::remove_reference_t<T>>::value>>
-    : is_character<std::remove_pointer_t<std::remove_reference_t<T>>>
+struct is_string_cvref<T*> : is_character<T>
 {};
 
-template <typename T>  // specialization for containers (like std::string and
-                       // std::array<char>)
-struct is_string<T, std::enable_if_t<is_container_v<T>>>
-    : is_character<typename std::iterator_traits<iterator_type<T>>::value_type>
+template <typename T>  // specialization for containers (like std::string and std::array<char>)
+struct is_string_cvref<T, std::void_t<element_type<T>>> : is_character<element_type<T>>
 {};
+
+template <typename T>
+using is_string = is_string_cvref<std::remove_cv_t<std::remove_reference_t<T>>>;
 
 template <typename T>
 constexpr auto is_string_v = is_string<T>::value;

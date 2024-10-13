@@ -101,7 +101,7 @@ struct PositionInfo_t
  * STATS_SIZE must be a small power of 2.
  */
 #define STATS_SIZE 256
-#define STATS_MASK ((STATS_SIZE)-1)
+#define STATS_MASK ((STATS_SIZE) - 1)
 
 /** The simple hash table to gather
  * statistics on leaks.

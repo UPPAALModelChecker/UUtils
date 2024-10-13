@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////
 
 // Local debugging: use -DSHOWS_STATS
-//#define SHOW_STATS
+// #define SHOW_STATS
 
 #include <hash/tables.h>
 #ifdef SHOW_STATS

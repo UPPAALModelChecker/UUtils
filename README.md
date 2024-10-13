@@ -13,7 +13,7 @@ UUtils also depends on libraries `xxHash`, `doctest`, `benchmark`, `boost`, whic
 git clone https://github.com/UPPAALModelChecker/UUtils
 cmake -S UUtils -B build
 cmake --build build
-(cd build ; ctest --output-on-failure)
+ctest --test-dir build --output-on-failure
 sudo cmake --install build
 ```
 That's it!
