@@ -76,7 +76,7 @@ TEST_CASE("meta predicates (type functions)")
     static_assert(is_container_v<std::deque<int>>, "initializer list of int is a container");
     static_assert(is_container_v<std::string>, "string is a container");
     static_assert(is_container_v<std::string_view>, "string_view is a container");
-    static_assert(is_container_v<char*[2]>, "array of pointers to char is a container");
+    static_assert(is_container_v<char* [2]>, "array of pointers to char is a container");
     static_assert(!is_container_v<bool>, "bool is not a container");
     static_assert(!is_container_v<char>, "char is not a container");
     static_assert(!is_container_v<int>, "int is not a container");
@@ -90,7 +90,7 @@ TEST_CASE("meta predicates (type functions)")
     static_assert(is_string_v<char* const>, "C string");
     static_assert(is_string_v<const char* const>, "C string");
     static_assert(is_string_v<char[2]>, "character array is a string");
-    static_assert(is_string_v<std::array<char,2>>, "character array is a string");
+    static_assert(is_string_v<std::array<char, 2>>, "character array is a string");
     static_assert(is_string_v<std::vector<char>>, "vector of char is a string");
     static_assert(is_string_v<std::string>, "std::string is a string");
     static_assert(is_string_v<std::string_view>, "std::string_view is a string");

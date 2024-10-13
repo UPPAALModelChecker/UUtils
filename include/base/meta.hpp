@@ -23,31 +23,35 @@
 namespace meta {
 /// true if T is bool (or a reference to it)
 template <typename T, typename TT = std::remove_cv_t<std::remove_reference_t<T>>>
-struct is_bool : std::is_same<TT, bool> {};
+struct is_bool : std::is_same<TT, bool>
+{};
 
 template <typename T>
 constexpr auto is_bool_v = is_bool<T>::value;
 
 /// Same as std::conditional, except with defaults for TrueType and FalseType
 template <bool Condition, typename TrueType = std::true_type, typename FalseType = std::false_type>
-struct conditional : std::conditional<Condition, TrueType, FalseType>  {};
+struct conditional : std::conditional<Condition, TrueType, FalseType>
+{};
 
 template <bool Condition, typename TrueType = std::true_type, typename FalseType = std::false_type>
 using conditional_t = typename conditional<Condition, TrueType, FalseType>::type;
 
 /// True if T is equal to any of Types
-template <typename T, typename...Types>
+template <typename T, typename... Types>
 constexpr auto is_any_of_v = (... || std::is_same_v<T, Types>);
 
-template <typename T, typename...Types>
-struct is_any_of : conditional<is_any_of_v<T,Types...>> {};
+template <typename T, typename... Types>
+struct is_any_of : conditional<is_any_of_v<T, Types...>>
+{};
 
-template <typename T, typename...Types>
-using is_any_of_t = typename is_any_of<T,Types...>::type;
+template <typename T, typename... Types>
+using is_any_of_t = typename is_any_of<T, Types...>::type;
 
 /// true if T is a character or a reference to it
 template <typename T>
-struct is_character : is_any_of_t<std::remove_cv_t<std::remove_reference_t<T>>, char, wchar_t> {};
+struct is_character : is_any_of_t<std::remove_cv_t<std::remove_reference_t<T>>, char, wchar_t>
+{};
 
 template <typename T>
 constexpr auto is_character_v = is_character<T>::value;
@@ -87,7 +91,8 @@ struct is_string_cvref<T*> : is_character<T>
 {};
 
 template <typename T>  // specialization for containers (like std::string and std::array<char>)
-struct is_string_cvref<T, std::void_t<element_type<T>>> : is_character<element_type<T>> {};
+struct is_string_cvref<T, std::void_t<element_type<T>>> : is_character<element_type<T>>
+{};
 
 template <typename T>
 using is_string = is_string_cvref<std::remove_cv_t<std::remove_reference_t<T>>>;
