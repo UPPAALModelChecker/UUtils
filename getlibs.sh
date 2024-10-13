@@ -63,19 +63,19 @@ for target in $targets ; do
 
     ## BOOST
     NAME=boost
-    VERSION=1.83.0
+    VERSION=1.86.0
     LIBRARY="${NAME}-${VERSION}"
-    ARCHIVE="$LIBRARY.tar.xz"
-    SHA256=c5a0688e1f0c05f354bbd0b32244d36085d9ffc9f932e8a18983a9908096f614
-    SOURCE="${SOURCES}/$LIBRARY"
-    BUILD="${PREFIX}/build-$LIBRARY"
+    ARCHIVE="${LIBRARY}-cmake.tar.xz"
+    SHA256=2c5ec5edcdff47ff55e27ed9560b0a0b94b07bd07ed9928b476150e16b0efc57
+    SOURCE="${SOURCES}/${LIBRARY}"
+    BUILD="${PREFIX}/build-${LIBRARY}"
     if [ -r "${CMAKE_INSTALL_PREFIX}/include/boost/math/distributions/arcsine.hpp" ] ; then
         echo "$LIBRARY is already installed in $CMAKE_INSTALL_PREFIX"
     else
         pushd "$SOURCES"
-        [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/boostorg/boost/releases/download/$LIBRARY/$LIBRARY.tar.xz" -o "${ARCHIVE}"
+        [ -r "$ARCHIVE" ] || curl -sL "https://github.com/boostorg/boost/releases/download/${LIBRARY}/${LIBRARY}-cmake.tar.xz" -o "$ARCHIVE"
         if [ -n "$(command -v sha256sum)" ]; then echo "$SHA256 $ARCHIVE" | sha256sum --check ; fi
-        [ -d "${SOURCE}" ] || tar xf "${ARCHIVE}"
+        [ -d "$SOURCE" ] || tar xf "$ARCHIVE"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
         echo "  CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE:-(unset)}"
