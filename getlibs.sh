@@ -122,10 +122,10 @@ for target in $targets ; do
 
     ## Google Benchmark
     NAME=benchmark
-    VERSION=1.8.3 # v1.8.2 fails with "-lrt not found" on win64
+    VERSION=1.9.0 # v1.8.2 fails with "-lrt not found" on win64
     LIBRARY="${NAME}-${VERSION}"
     ARCHIVE="${LIBRARY}.tar.gz"
-    SHA256=6bc180a57d23d4d9515519f92b0c83d61b05b5bab188961f36ac7b06b0d9e9ce
+    SHA256=35a77f46cc782b16fac8d3b107fbfbb37dcd645f7c28eee19f3b8e0758b48994
     SOURCE="${SOURCES}/${LIBRARY}"
     BUILD="${PREFIX}/build-${LIBRARY}"
     if [ -r "${CMAKE_INSTALL_PREFIX}/include/benchmark/benchmark.h" ] ; then
