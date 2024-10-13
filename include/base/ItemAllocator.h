@@ -94,7 +94,7 @@ public:
         freeItem = nullptr;
         while (p) {
             AllocPool_t* next = p->next;
-            delete[](char*) p;
+            delete[] (char*)p;
             p = next;
         }
     }
