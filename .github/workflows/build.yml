@@ -29,8 +29,9 @@ jobs:
         run: |
           sudo apt-get -qy update
           sudo apt-get -qy install cmake ninja-build
-          CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CMAKE_BUILD_PARALLEL_LEVEL" >> $GITHUB_ENV
+          CORES=$(nproc)
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
       - name: Build without getlibs
         run: |
           BUILD=build-x86_64-linux-debug
@@ -42,10 +43,11 @@ jobs:
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
       - name: Build with getlibs
         run: |
-          BUILD=build-x86_64-linux-libs-debug
+          BUILD=build-${TARGET}-libs-${CMAKE_BUILD_TYPE,,}
           cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DUBSAN=ON -DFIND_FATAL=ON
           cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          (cd "$BUILD" && ctest -C $CMAKE_BUILD_TYPE)
+          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE)
+
   build-win:
     runs-on: ubuntu-latest
     env:
@@ -66,8 +68,10 @@ jobs:
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
           WINEPATH=$(./winepath-for $TARGET)
           echo "WINEPATH=$WINEPATH" >> $GITHUB_ENV
-          CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CMAKE_BUILD_PARALLEL_LEVEL" >> $GITHUB_ENV
+          CORES=$(nproc)
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+
       - name: Build without getlibs
         run: |
           BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}
@@ -82,7 +86,8 @@ jobs:
           BUILD=build-${TARGET}-libs-${CMAKE_BUILD_TYPE,,}
           cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
           cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE)
+          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+
   build-macos:
     runs-on: macos-latest
     env:
@@ -96,11 +101,12 @@ jobs:
       - name: Install Ninja
         run: |
           brew install ninja
-          CMAKE_BUILD_PARALLEL_LEVEL=$(sysctl -n hw.ncpu)
-          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CMAKE_BUILD_PARALLEL_LEVEL" >> $GITHUB_ENV
+          CORES=$(sysctl -n hw.ncpu)
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
       - name: Build without getlibs
         run: |
-          BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}
+          BUILD=build-${TARGET}-$(tr '[:upper:]' '[:lower:]' <<< "$CMAKE_BUILD_TYPE")
           cmake -S . -B "$BUILD"
           cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
           ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
@@ -109,10 +115,11 @@ jobs:
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
       - name: Build with getlibs
         run: |
-          BUILD=build-${TARGET}-libs-${CMAKE_BUILD_TYPE,,}
+          BUILD=build-${TARGET}-libs-$(tr '[:upper:]' '[:lower:]' <<< "$CMAKE_BUILD_TYPE")
           cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/x86_64-darwin" -DFIND_FATAL=ON
           cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
           ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+
   build-windows:
     runs-on: windows-latest
     env:
