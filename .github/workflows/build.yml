@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Version of clang-format
+        run: clang-format --version
       - name: Formatting
         run: find src include test -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
   build-linux:
@@ -37,7 +39,7 @@ jobs:
           BUILD=build-x86_64-linux-debug
           cmake -S . -B "$BUILD" -DUBSAN=ON
           cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          (cd "$BUILD" && ctest -C $CMAKE_BUILD_TYPE)
+          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
       - name: Get dependencies
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
@@ -46,7 +48,7 @@ jobs:
           BUILD=build-${TARGET}-libs-${CMAKE_BUILD_TYPE,,}
           cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DUBSAN=ON -DFIND_FATAL=ON
           cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE)
+          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
   build-win:
     runs-on: ubuntu-latest
