@@ -58,7 +58,7 @@ constexpr auto is_character_v = is_character<T>::value;
 
 /// true if T is a number or a reference to it
 template <typename T, typename TT = std::remove_cv_t<std::remove_reference_t<T>>>
-constexpr auto is_number_v = std::is_arithmetic_v<TT> && not is_bool_v<TT> && not is_character_v<TT>;
+constexpr auto is_number_v = std::is_arithmetic_v<TT> && !is_bool_v<TT> && !is_character_v<TT>;
 
 /// helper meta-function to extract the iterator type from container
 template <typename T>
