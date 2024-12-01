@@ -38,6 +38,9 @@ const char* oserror(int error_code)
                        NULL, dwError, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (LPTSTR)&lpMsgBuf, 0, NULL)) {
         return "(error message not available)";
     } else {
+        // hansbug: i didnt change this code to remove \r\n for safety
+        //          but i suggest to optimize this code, the current code can only remove \n
+        //          which will leave a \r on windows
         char* eol = lpMsgBuf;  // remove end of lines from M$ idiocracies:
         while (NULL != (eol = strchr(eol, '\n'))) {
             if (eol[1] == 0)
@@ -49,6 +52,48 @@ const char* oserror(int error_code)
     }
 }
 
+#elif _MSC_VER
+
+#include <windows.h>
+#include <strsafe.h>
+
+const char* oserror(int error_code)
+{
+    DWORD dwError = (DWORD)error_code;
+    LPSTR lpMsgBuf = NULL;
+
+    if (!FormatMessageA(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        dwError,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPSTR)&lpMsgBuf,
+        0,
+        NULL)) {
+        return "(error message not available)";
+    } else {
+        size_t len = strlen(lpMsgBuf);
+
+        while ((len > 0) && ((lpMsgBuf[len - 1] == '\n') || (lpMsgBuf[len - 1] == '\r'))) {
+            lpMsgBuf[len - 1] = '\0';
+            len -= 1;
+        }
+        int i = 0;
+        for (; i < len; i++) {
+            if ((lpMsgBuf[i] == '\n') || (lpMsgBuf[i] == '\r')) {
+                lpMsgBuf[i] = '.';
+            }
+        }
+
+        static char errorMsg[256];
+        StringCchCopyA(errorMsg, sizeof(errorMsg), lpMsgBuf);
+        LocalFree(lpMsgBuf);
+        return errorMsg;
+    }
+}
+
 #else /* UNIX */
 
 #include <string.h>
@@ -56,7 +101,7 @@ const char* oserror(int error_code) { return strerror(error_code); }
 
 #endif
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_MSC_VER)
 
 void base_getMemInfo(meminfo_t* info)
 {
@@ -189,7 +234,7 @@ void base_getMemInfo(meminfo_t* info)
 
 #endif
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_MSC_VER)
 
 #include <psapi.h>
 #include <stdint.h>
@@ -207,11 +252,25 @@ void base_getProcInfo(procinfo_t* info)
     FILETIME ftExitTime;
     FILETIME ftKernelTime;
     FILETIME ftUserTime;
+    #ifdef _MSC_VER
+    PROCESS_MEMORY_COUNTERS pmc = {0};
+    #else
     PROCESS_MEMORY_COUNTERS pmc;
+    #endif
     pmc.cb = sizeof(pmc);
 
     GetSystemTimeAsFileTime(&now);
+
+    #ifdef _MSC_VER
+    // we have to check the return value of GetProcessMemoryInfo on MSC environment
+    if (!GetProcessMemoryInfo(hThisProcess, &pmc, sizeof(pmc))) {
+        memset(info, 0, sizeof(procinfo_t));
+        return;
+    }
+    #else
     GetProcessMemoryInfo(hThisProcess, &pmc, sizeof(pmc));
+    #endif
+
     if (GetProcessTimes(hThisProcess, &ftCreationTime, &ftExitTime, &ftKernelTime, &ftUserTime)) {
         li.LowPart = ftUserTime.dwLowDateTime;
         li.HighPart = ftUserTime.dwHighDateTime;
