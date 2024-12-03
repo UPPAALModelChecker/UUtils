@@ -15,7 +15,7 @@
 
 static double fracInRange(const std::vector<int>& values, double from, double till)
 {
-	const int length = values.size();
+    const int length = values.size();
     double count = 0;
     for (int i = 0; i < length; ++i)
         if (from <= values[i] && values[i] < till)
@@ -32,7 +32,7 @@ using std::endl;
 
 static bool frequency_analysis(int n, const std::vector<int>& values, double alpha)
 {
-	const int range = values.size();
+    const int range = values.size();
     const auto sqrt_n = std::sqrt(n);
     auto sum = 0., sumsq = 0.;
     auto minv = std::numeric_limits<double>::infinity();
