@@ -121,7 +121,7 @@ jobs:
           pwsh -Command { $env:CMAKE_BUILD_TYPE=Release; bash ./getlibs.sh x86_64-w64-mingw32 }
       - name: Build
         run: |
-          $env:BUILD=build-x86_64-windows-debug'
+          $env:BUILD='build-x86_64-windows-debug'
           cmake -S . -B $env:BUILD -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
           cmake --build $env:BUILD --config $env:CMAKE_BUILD_TYPE
           ctest --test-dir $env:BUILD -C $env:CMAKE_BUILD_TYPE
