@@ -13,8 +13,9 @@
 #include <random>
 #include <cmath>
 
-static double fracInRange(const std::vector<int>& values, int length, double from, double till)
+static double fracInRange(const std::vector<int>& values, double from, double till)
 {
+	const int length = values.size();
     double count = 0;
     for (int i = 0; i < length; ++i)
         if (from <= values[i] && values[i] < till)
@@ -29,8 +30,9 @@ using boost::math::quantile;
 using std::cout;
 using std::endl;
 
-static bool frequency_analysis(int n, const std::vector<int>& values, int range, double alpha)
+static bool frequency_analysis(int n, const std::vector<int>& values, double alpha)
 {
+	const int range = values.size();
     const auto sqrt_n = std::sqrt(n);
     auto sum = 0., sumsq = 0.;
     auto minv = std::numeric_limits<double>::infinity();
@@ -73,14 +75,14 @@ static bool frequency_analysis(int n, const std::vector<int>& values, int range,
     cout << "Sd^2:     " << var << " (" << n << ")" << endl;
     cout << "Sd:       " << Sd << " (" << sqrt_n << ")" << endl;
     cout << "Sd/mean:  " << std::fixed << std::setprecision(4) << Sd / mean << " (" << sqrt_n / mean << ")" << endl;
-    cout << "  -3*Sd:  " << fracInRange(values, range, 0, mean - 3 * Sd) * 100 << "% (0.1%)" << endl;
-    cout << "-3-2*Sd:  " << fracInRange(values, range, mean - 3 * Sd, mean - 2 * Sd) * 100 << "% (2.1%)" << endl;
-    cout << "-2-1*Sd:  " << fracInRange(values, range, mean - 2 * Sd, mean - 1 * Sd) * 100 << "% (13.6%)" << endl;
-    cout << "-1-0*Sd:  " << fracInRange(values, range, mean - Sd, mean) * 100 << "% (34.1%)" << endl;
-    cout << "+0-1*Sd:  " << fracInRange(values, range, mean, mean + 1 * Sd) * 100 << "% (34.1%)" << endl;
-    cout << "+1-2*Sd:  " << fracInRange(values, range, mean + 1 * Sd, mean + 2 * Sd) * 100 << "% (13.6%)" << endl;
-    cout << "+2-3*Sd:  " << fracInRange(values, range, mean + 2 * Sd, mean + 3 * Sd) * 100 << "% (2.1%)" << endl;
-    cout << "+3- *Sd:  " << fracInRange(values, range, mean + 3 * Sd, std::numeric_limits<double>::infinity()) * 100
+    cout << "  -3*Sd:  " << fracInRange(values, 0, mean - 3 * Sd) * 100 << "% (0.1%)" << endl;
+    cout << "-3-2*Sd:  " << fracInRange(values, mean - 3 * Sd, mean - 2 * Sd) * 100 << "% (2.1%)" << endl;
+    cout << "-2-1*Sd:  " << fracInRange(values, mean - 2 * Sd, mean - 1 * Sd) * 100 << "% (13.6%)" << endl;
+    cout << "-1-0*Sd:  " << fracInRange(values, mean - Sd, mean) * 100 << "% (34.1%)" << endl;
+    cout << "+0-1*Sd:  " << fracInRange(values, mean, mean + 1 * Sd) * 100 << "% (34.1%)" << endl;
+    cout << "+1-2*Sd:  " << fracInRange(values, mean + 1 * Sd, mean + 2 * Sd) * 100 << "% (13.6%)" << endl;
+    cout << "+2-3*Sd:  " << fracInRange(values, mean + 2 * Sd, mean + 3 * Sd) * 100 << "% (2.1%)" << endl;
+    cout << "+3- *Sd:  " << fracInRange(values, mean + 3 * Sd, std::numeric_limits<double>::infinity()) * 100
          << "% (0.1%)" << endl;
     cout << "Skew:     " << skewness << " (0.0)" << endl;
     cout << "Kurtosis: " << kurtosis << " (0.0)" << endl;
@@ -123,7 +125,7 @@ static bool floating_point_test(int n, int range, int offset, double alpha)
         }
     }
     cout << endl;
-    return frequency_analysis(n, values, range, alpha);
+    return frequency_analysis(n, values, alpha);
 }
 
 /** returns true if passed, otherwise false. */
@@ -146,7 +148,7 @@ static bool integer_test(int n, int range, int offset, double alpha)
         }
     }
     cout << endl;
-    return frequency_analysis(n, values, range, alpha);
+    return frequency_analysis(n, values, alpha);
 }
 
 struct step_t
