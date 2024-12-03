@@ -15,13 +15,19 @@ add_test(NAME debug_utils_50 COMMAND test_utils 50)  # failing test: L64-debug
 
 # mark tests which are supposed to fail
 set_tests_properties(
-  debug_new_2
+  debug_new_2 # test for crash
   debug_utils_10
   debug_utils_20
   debug_utils_1
   debug_utils_7
   debug_utils_50
   PROPERTIES WILL_FAIL TRUE)
+
+if (ASAN OR LSAN)
+  set_tests_properties(
+    debug_new_1 # test for memory leaks
+    PROPERTIES WILL_FAIL TRUE)
+endif()
 
 # disable failing tests:
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
