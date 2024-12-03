@@ -151,10 +151,9 @@ jobs:
       - name: Get Libs
         run: |
           vcpkg integrate install
-          vcpkg install doctest --triplet x64-windows
-          pwsh -Command { $env:CMAKE_BUILD_TYPE='Release'; bash ./getlibs.sh x86_64-w64-mingw32 }
+          vcpkg install xxhash boost-math doctest benchmark --triplet x64-windows
       - name: Connfigure
-        run: cmake -S . -B $env:BUILD -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
+        run: cmake -S . -B $env:BUILD
       - name: Compile
         run: cmake --build $env:BUILD --config $env:CMAKE_BUILD_TYPE
       - name: Test

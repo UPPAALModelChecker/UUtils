@@ -5,3 +5,4 @@ build-*
 local
 cmake-build-*
 .idea
+.vs
