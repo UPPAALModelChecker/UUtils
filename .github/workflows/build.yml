@@ -78,7 +78,7 @@ jobs:
           cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
           ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
-  build-macos:
+  build-macos-x86_64:
     runs-on: macos-latest
     env:
       TARGET: x86_64-darwin
@@ -97,10 +97,36 @@ jobs:
       - name: Get Libs
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
-      - name: Build with getlibs
+      - name: Build
         run: |
           BUILD=build-${TARGET}-debug
-          cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/x86_64-darwin" -DFIND_FATAL=ON
+          cmake -S . -B "$BUILD" -DCMAKE_TOOLCHAIN_FILE="cmake/toolchain/${TARGET}.cmake" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
+          cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
+          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+
+  build-macos-arm64:
+    runs-on: macos-latest
+    env:
+      TARGET: arm64-darwin
+      CMAKE_GENERATOR: Ninja
+      CMAKE_BUILD_TYPE: Debug
+      CTEST_OUTPUT_ON_FAILURE: 1
+      CTEST_TEST_TIMEOUT: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ninja
+        run: |
+          brew install ninja
+          CORES=$(sysctl -n hw.ncpu)
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+      - name: Get Libs
+        run: |
+          CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
+      - name: Build
+        run: |
+          BUILD=build-${TARGET}-debug
+          cmake -S . -B "$BUILD" -DCMAKE_TOOLCHAIN_FILE="cmake/toolchain/${TARGET}.cmake" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
           cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
           ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
