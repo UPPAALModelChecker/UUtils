@@ -35,15 +35,16 @@ jobs:
           CORES=$(nproc)
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}" >> $GITHUB_ENV
       - name: Get Libs
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
-      - name: Build
-        run: |
-          BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}
-          cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/${TARGET}" -DUBSAN=ON -DASAN=ON -DFIND_FATAL=ON
-          cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+      - name: Configure
+        run: cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/${TARGET}" -DUBSAN=ON -DASAN=ON -DFIND_FATAL=ON
+      - name: Compile
+        run: cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
   build-mingw:
     runs-on: ubuntu-24.04
@@ -68,16 +69,16 @@ jobs:
           CORES=$(nproc)
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
-
+          echo "BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}" >> $GITHUB_ENV
       - name: Get Libs
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
-      - name: Build
-        run: |
-          BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}
-          cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/${TARGET}" -DFIND_FATAL=ON
-          cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+      - name: Configure
+        run: cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/${TARGET}" -DFIND_FATAL=ON
+      - name: Compile
+        run: cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
   build-macos-x86_64:
     runs-on: macos-latest
@@ -95,15 +96,16 @@ jobs:
           CORES=$(sysctl -n hw.ncpu)
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "BUILD=build-${TARGET}-debug" >> $GITHUB_ENV
       - name: Get Libs
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
-      - name: Build
-        run: |
-          BUILD=build-${TARGET}-debug
-          cmake -S . -B "$BUILD" -DCMAKE_TOOLCHAIN_FILE="cmake/toolchain/${TARGET}.cmake" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
-          cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+      - name: Configure
+        run: cmake -S . -B "$BUILD" -DCMAKE_TOOLCHAIN_FILE="cmake/toolchain/${TARGET}.cmake" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
+      - name: Compile
+        run: cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
   build-macos-arm64:
     runs-on: macos-latest
@@ -121,19 +123,21 @@ jobs:
           CORES=$(sysctl -n hw.ncpu)
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "BUILD=build-${TARGET}-debug" >> $GITHUB_ENV
       - name: Get Libs
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
-      - name: Build
-        run: |
-          BUILD=build-${TARGET}-debug
-          cmake -S . -B "$BUILD" -DCMAKE_TOOLCHAIN_FILE="cmake/toolchain/${TARGET}.cmake" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
-          cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+      - name: Configure
+        run: cmake -S . -B "$BUILD" -DCMAKE_TOOLCHAIN_FILE="cmake/toolchain/${TARGET}.cmake" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
+      - name: Compile
+        run: cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
   build-windows:
     runs-on: windows-latest
     env:
+      TARGET: x86_64-windows
       CMAKE_TOOLCHAIN_FILE: C:/vcpkg/scripts/buildsystems/vcpkg.cmake
       CMAKE_BUILD_TYPE: Debug
       STATIC: ON
@@ -141,14 +145,17 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: 1
     steps:
       - uses: actions/checkout@v4
+      - name: Setup
+        run: |
+          echo "BUILD=build-$env:TARGET-debug" >> $env:GITHUB_ENV
       - name: Get Libs
         run: |
           vcpkg integrate install
           vcpkg install doctest --triplet x64-windows
           pwsh -Command { $env:CMAKE_BUILD_TYPE='Release'; bash ./getlibs.sh x86_64-w64-mingw32 }
-      - name: Build
-        run: |
-          $env:BUILD='build-x86_64-windows-debug'
-          cmake -S . -B $env:BUILD -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/${{ env.TARGET }}
-          cmake --build $env:BUILD --config $env:CMAKE_BUILD_TYPE
-          ctest --test-dir $env:BUILD -C $env:CMAKE_BUILD_TYPE
+      - name: Connfigure
+        run: cmake -S . -B $env:BUILD -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
+      - name: Compile
+        run: cmake --build $env:BUILD --config $env:CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir $env:BUILD -C $env:CMAKE_BUILD_TYPE
