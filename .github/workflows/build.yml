@@ -17,6 +17,7 @@ jobs:
         run: clang-format --version
       - name: Formatting
         run: find src include test -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
+
   build-linux:
     runs-on: ubuntu-24.04
     env:
@@ -44,7 +45,7 @@ jobs:
           cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
           ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
-  build-win:
+  build-mingw:
     runs-on: ubuntu-24.04
     env:
       TARGET: x86_64-w64-mingw32
@@ -60,8 +61,8 @@ jobs:
         run: |
           sudo apt-get -qq update
           sudo apt-get -qq install cmake ninja-build g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools wine wine-binfmt
-          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
-          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          sudo update-alternatives --set ${TARGET}-gcc /usr/bin/${TARGET}-gcc-posix
+          sudo update-alternatives --set ${TARGET}-g++ /usr/bin/${TARGET}-g++-posix
           WINEPATH=$(./winepath-for $TARGET)
           echo "WINEPATH=$WINEPATH" >> $GITHUB_ENV
           CORES=$(nproc)
@@ -144,10 +145,10 @@ jobs:
         run: |
           vcpkg integrate install
           vcpkg install doctest --triplet x64-windows
-          pwsh -Command { $env:CMAKE_BUILD_TYPE=Release; bash ./getlibs.sh x86_64-w64-mingw32 }
+          pwsh -Command { $env:CMAKE_BUILD_TYPE='Release'; bash ./getlibs.sh x86_64-w64-mingw32 }
       - name: Build
         run: |
           $env:BUILD='build-x86_64-windows-debug'
-          cmake -S . -B $env:BUILD -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
+          cmake -S . -B $env:BUILD -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/${{ env.TARGET }}
           cmake --build $env:BUILD --config $env:CMAKE_BUILD_TYPE
           ctest --test-dir $env:BUILD -C $env:CMAKE_BUILD_TYPE
