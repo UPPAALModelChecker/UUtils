@@ -11,7 +11,9 @@ UUtils also depends on libraries `xxHash`, `doctest`, `benchmark`, `boost`, whic
 ## Build, Test and Install
 ```shell
 git clone https://github.com/UPPAALModelChecker/UUtils
-cmake -S UUtils -B build
+cd UUtils
+./getlibs.sh
+cmake -B build
 cmake --build build
 ctest --test-dir build --output-on-failure
 sudo cmake --install build
