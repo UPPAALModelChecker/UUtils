@@ -17,6 +17,7 @@ jobs:
         run: clang-format --version
       - name: Formatting
         run: find src include test -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
+
   build-linux:
     runs-on: ubuntu-24.04
     env:
@@ -34,17 +35,18 @@ jobs:
           CORES=$(nproc)
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}" >> $GITHUB_ENV
       - name: Get Libs
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
-      - name: Build
-        run: |
-          BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}
-          cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/${TARGET}" -DUBSAN=ON -DASAN=ON -DFIND_FATAL=ON
-          cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+      - name: Configure
+        run: cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/${TARGET}" -DUBSAN=ON -DASAN=ON -DFIND_FATAL=ON
+      - name: Compile
+        run: cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
-  build-win:
+  build-mingw:
     runs-on: ubuntu-24.04
     env:
       TARGET: x86_64-w64-mingw32
@@ -60,25 +62,25 @@ jobs:
         run: |
           sudo apt-get -qq update
           sudo apt-get -qq install cmake ninja-build g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools wine wine-binfmt
-          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
-          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          sudo update-alternatives --set ${TARGET}-gcc /usr/bin/${TARGET}-gcc-posix
+          sudo update-alternatives --set ${TARGET}-g++ /usr/bin/${TARGET}-g++-posix
           WINEPATH=$(./winepath-for $TARGET)
           echo "WINEPATH=$WINEPATH" >> $GITHUB_ENV
           CORES=$(nproc)
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
-
+          echo "BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}" >> $GITHUB_ENV
       - name: Get Libs
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
-      - name: Build
-        run: |
-          BUILD=build-${TARGET}-${CMAKE_BUILD_TYPE,,}
-          cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/${TARGET}" -DFIND_FATAL=ON
-          cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+      - name: Configure
+        run: cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/${TARGET}" -DFIND_FATAL=ON
+      - name: Compile
+        run: cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
-  build-macos:
+  build-macos-x86_64:
     runs-on: macos-latest
     env:
       TARGET: x86_64-darwin
@@ -94,19 +96,48 @@ jobs:
           CORES=$(sysctl -n hw.ncpu)
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "BUILD=build-${TARGET}-debug" >> $GITHUB_ENV
       - name: Get Libs
         run: |
           CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
-      - name: Build with getlibs
+      - name: Configure
+        run: cmake -S . -B "$BUILD" -DCMAKE_TOOLCHAIN_FILE="cmake/toolchain/${TARGET}.cmake" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
+      - name: Compile
+        run: cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+
+  build-macos-arm64:
+    runs-on: macos-latest
+    env:
+      TARGET: arm64-darwin
+      CMAKE_GENERATOR: Ninja
+      CMAKE_BUILD_TYPE: Debug
+      CTEST_OUTPUT_ON_FAILURE: 1
+      CTEST_TEST_TIMEOUT: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ninja
         run: |
-          BUILD=build-${TARGET}-debug
-          cmake -S . -B "$BUILD" -DCMAKE_PREFIX_PATH="$PWD/local/x86_64-darwin" -DFIND_FATAL=ON
-          cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
-          ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
+          brew install ninja
+          CORES=$(sysctl -n hw.ncpu)
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "CTEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "BUILD=build-${TARGET}-debug" >> $GITHUB_ENV
+      - name: Get Libs
+        run: |
+          CMAKE_BUILD_TYPE=Release ./getlibs.sh $TARGET
+      - name: Configure
+        run: cmake -S . -B "$BUILD" -DCMAKE_TOOLCHAIN_FILE="cmake/toolchain/${TARGET}.cmake" -DCMAKE_PREFIX_PATH="$PWD/local/$TARGET" -DFIND_FATAL=ON
+      - name: Compile
+        run: cmake --build "$BUILD" --config $CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
   build-windows:
     runs-on: windows-latest
     env:
+      TARGET: x86_64-windows
       CMAKE_TOOLCHAIN_FILE: C:/vcpkg/scripts/buildsystems/vcpkg.cmake
       CMAKE_BUILD_TYPE: Debug
       STATIC: ON
@@ -114,14 +145,16 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: 1
     steps:
       - uses: actions/checkout@v4
+      - name: Setup
+        run: |
+          echo "BUILD=build-$env:TARGET-debug" >> $env:GITHUB_ENV
       - name: Get Libs
         run: |
           vcpkg integrate install
-          vcpkg install doctest --triplet x64-windows
-          pwsh -Command { $env:CMAKE_BUILD_TYPE=Release; bash ./getlibs.sh x86_64-w64-mingw32 }
-      - name: Build
-        run: |
-          $env:BUILD='build-x86_64-windows-debug'
-          cmake -S . -B $env:BUILD -DCMAKE_PREFIX_PATH=${{ github.workspace }}/local/x86_64-w64-mingw32
-          cmake --build $env:BUILD --config $env:CMAKE_BUILD_TYPE
-          ctest --test-dir $env:BUILD -C $env:CMAKE_BUILD_TYPE
+          vcpkg install xxhash boost-math doctest benchmark --triplet x64-windows
+      - name: Connfigure
+        run: cmake -S . -B $env:BUILD
+      - name: Compile
+        run: cmake --build $env:BUILD --config $env:CMAKE_BUILD_TYPE
+      - name: Test
+        run: ctest --test-dir $env:BUILD -C $env:CMAKE_BUILD_TYPE

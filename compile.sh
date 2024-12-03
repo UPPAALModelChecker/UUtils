@@ -32,6 +32,9 @@ if [ $# -eq 0 ] ; then
     if [ -n "$(command -v x86_64-w64-mingw32-g++)" ]; then
         targets="$targets x86_64-w64-mingw32-release"
     fi
+    if [ "$kernel" == "Darwin" ] && [ "$machine" == "arm64" ]; then
+        targets="$targets x86_64-darwin-release"
+    fi
     echo "Guessing: $targets"
 else
     case "$1" in
@@ -88,7 +91,7 @@ for target in $targets ; do
             BUILD_TARGET=x86_64-darwin
             ;;
         arm64-darwin*)
-            BUILD_TARGET=x86_64-darwin
+            BUILD_TARGET=arm64-darwin
             ;;
         *)
             echo "Failed to recognize target platform: $target"

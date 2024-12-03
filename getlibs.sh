@@ -73,7 +73,9 @@ for target in $targets ; do
     else
         pushd "$SOURCES"
         [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/Cyan4973/xxHash/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
-        if [ -n "$(command -v sha256sum)" ]; then echo "$SHA256 $ARCHIVE" | sha256sum --check ; fi
+        if [ -n "$(command -v shasum)" ]; then
+            echo "$SHA256  $ARCHIVE" | shasum -a256 --check -
+        fi
         [ -d "$SOURCE" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
@@ -98,7 +100,9 @@ for target in $targets ; do
     else
         pushd "$SOURCES"
         [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/boostorg/boost/releases/download/${LIBRARY}/${ARCHIVE}" -o "${ARCHIVE}"
-        if [ -n "$(command -v sha256sum)" ]; then echo "$SHA256 $ARCHIVE" | sha256sum --check ; fi
+        if [ -n "$(command -v shasum)" ]; then
+            echo "$SHA256  $ARCHIVE" | shasum -a256 --check -
+        fi
         [ -d "${SOURCE}" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
@@ -125,7 +129,9 @@ for target in $targets ; do
     else
         pushd "${SOURCES}"
         [ -r "${ARCHIVE}" ] || curl -sL "https://github.com/doctest/doctest/archive/refs/tags/v$VERSION.tar.gz" -o "${ARCHIVE}"
-        if [ -n "$(command -v sha256sum)" ]; then echo "$SHA256 $ARCHIVE" | sha256sum --check ; fi
+        if [ -n "$(command -v shasum)" ]; then
+            echo "$SHA256  $ARCHIVE" | shasum -a256 --check -
+        fi
         [ -d "${SOURCE}" ] || tar xf "${ARCHIVE}"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
@@ -150,7 +156,9 @@ for target in $targets ; do
     else
         pushd "$SOURCES"
         [ -r "$ARCHIVE" ] || curl -sL "https://github.com/google/benchmark/archive/refs/tags/v${VERSION}.tar.gz" -o "$ARCHIVE"
-        if [ -n "$(command -v sha256sum)" ]; then echo "$SHA256 $ARCHIVE" | sha256sum --check ; fi
+        if [ -n "$(command -v shasum)" ]; then
+            echo "$SHA256  $ARCHIVE" | shasum -a256 --check -
+        fi
         [ -d "$LIBRARY" ] || tar -xf "$ARCHIVE"
         popd
         echo "Building $LIBRARY in $BUILD from $SOURCE"
