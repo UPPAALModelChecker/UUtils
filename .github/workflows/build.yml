@@ -10,7 +10,7 @@ on:
 
 jobs:
   formatting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Version of clang-format
@@ -18,7 +18,7 @@ jobs:
       - name: Formatting
         run: find src include test -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       TARGET: x86_64-linux
       CMAKE_GENERATOR: Ninja
@@ -45,7 +45,7 @@ jobs:
           ctest --test-dir "$BUILD" -C $CMAKE_BUILD_TYPE
 
   build-win:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       TARGET: x86_64-w64-mingw32
       WINARCH: win64
