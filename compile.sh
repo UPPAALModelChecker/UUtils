@@ -58,8 +58,8 @@ for target in $targets ; do
     unset CMAKE_PREFIX_PATH
     unset CMAKE_BUILD_TYPE
     unset BUILD_TARGET
-    unset BUILD_SUFFIX
-    unset BUILD_EXTRA
+    BUILD_SUFFIX=""
+    BUILD_EXTRA=""
     case "$target" in
         x86_64-linux-gcc10*)
             BUILD_TARGET=x86_64-linux-gcc10
@@ -102,7 +102,7 @@ for target in $targets ; do
     fi
     CMAKE_BUILD_TYPE=Release "$PROJECT_DIR/getlibs.sh" "$BUILD_TARGET"
     export CMAKE_PREFIX_PATH="$PROJECT_DIR/local/$BUILD_TARGET"
-    BUILD_EXTRA="-DFIND_FATAL=ON ${BUILD_EXTRA+x}"
+    BUILD_EXTRA="-DFIND_FATAL=ON ${BUILD_EXTRA}"
     case "$target" in
         *-ubsan*)
             BUILD_SUFFIX="${BUILD_SUFFIX}-ubsan"
@@ -133,7 +133,7 @@ for target in $targets ; do
                 export CMAKE_BUILD_TYPE=Debug
             fi
     esac
-    BUILD_DIR="build-${BUILD_TARGET}${BUILD_SUFFIX+x}-${CMAKE_BUILD_TYPE,,}"
+    BUILD_DIR="build-${BUILD_TARGET}${BUILD_SUFFIX}-${CMAKE_BUILD_TYPE,,}"
     echo "COMPILE for $target in $BUILD_DIR using $BUILD_EXTRA"
     show_cmake_vars
     cmake -S "$PROJECT_DIR" -B "$BUILD_DIR" $BUILD_EXTRA
