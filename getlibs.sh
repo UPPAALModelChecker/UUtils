@@ -62,10 +62,10 @@ for target in $targets ; do
 
     ## XXHASH
     NAME=xxHash
-    VERSION=0.8.2
+    VERSION=0.8.3
     LIBRARY="${NAME}-${VERSION}"
     ARCHIVE="$LIBRARY.tgz"
-    SHA256=baee0c6afd4f03165de7a4e67988d16f0f2b257b51d0e3cb91909302a26a79c4
+    SHA256=aae608dfe8213dfd05d909a57718ef82f30722c392344583d3f39050c7f29a80
     SOURCE="${SOURCES}/$LIBRARY"
     BUILD="${PREFIX}/build-$LIBRARY"
     if [ -r "${CMAKE_INSTALL_PREFIX}/include/xxhash.h" ]; then
@@ -89,10 +89,10 @@ for target in $targets ; do
 
     ## BOOST
     NAME=boost
-    VERSION=1.86.0
+    VERSION=1.88.0
     LIBRARY="${NAME}-${VERSION}"
     ARCHIVE="${LIBRARY}-cmake.tar.xz"
-    SHA256=2c5ec5edcdff47ff55e27ed9560b0a0b94b07bd07ed9928b476150e16b0efc57
+    SHA256=f48b48390380cfb94a629872346e3a81370dc498896f16019ade727ab72eb1ec
     SOURCE="${SOURCES}/${LIBRARY}"
     BUILD="${PREFIX}/build-${LIBRARY}"
     if [ -r "${CMAKE_INSTALL_PREFIX}/include/boost/math/distributions/arcsine.hpp" ] ; then
@@ -145,10 +145,10 @@ for target in $targets ; do
 
     ## Google Benchmark
     NAME=benchmark
-    VERSION=1.9.1 # v1.8.2 fails with "-lrt not found" on win64, v1.8.3 is good
+    VERSION=1.9.2 # v1.8.2 fails with "-lrt not found" on win64, v1.8.3 is good
     LIBRARY="${NAME}-${VERSION}"
     ARCHIVE="${LIBRARY}.tar.gz"
-    SHA256=32131c08ee31eeff2c8968d7e874f3cb648034377dfc32a4c377fa8796d84981
+    SHA256=409075176168dc46bbb81b74c1b4b6900385b5d16bfc181d678afb060d928bd3
     SOURCE="${SOURCES}/${LIBRARY}"
     BUILD="${PREFIX}/build-${LIBRARY}"
     if [ -r "${CMAKE_INSTALL_PREFIX}/include/benchmark/benchmark.h" ] ; then
