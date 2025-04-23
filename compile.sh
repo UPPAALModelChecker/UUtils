@@ -64,11 +64,17 @@ for target in $targets ; do
     BUILD_SUFFIX=""
     BUILD_EXTRA=""
     case "$target" in
+        x86_64-linux-gcc14*)
+            BUILD_TARGET=x86_64-linux-gcc14
+            ;;
         x86_64-linux-gcc10*)
             BUILD_TARGET=x86_64-linux-gcc10
             ;;
         x86_64-linux*)
             BUILD_TARGET=x86_64-linux
+            ;;
+        i686-linux-gcc14*)
+            BUILD_TARGET=i686-linux-gcc14
             ;;
         i686-linux-gcc10*)
             BUILD_TARGET=i686-linux-gcc10
@@ -83,6 +89,9 @@ for target in $targets ; do
         i686-w64-mingw32*)
             BUILD_TARGET=i686-w64-mingw32
             export WINEPATH=$("$PROJECT_DIR"/winepath-for $BUILD_TARGET)
+            ;;
+        x86_64-darwin-brew-gcc14-*)
+            BUILD_TARGET=x86_64-darwin-brew-gcc14
             ;;
         x86_64-darwin-brew-gcc10-*)
             BUILD_TARGET=x86_64-darwin-brew-gcc10
